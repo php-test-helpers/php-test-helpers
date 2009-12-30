@@ -47,6 +47,7 @@
 #include "php_ini.h"
 #include "ext/standard/info.h"
 #include "php_test_helpers.h"
+#include "Zend/zend_exceptions.h"
 
 ZEND_DECLARE_MODULE_GLOBALS(test_helpers)
 
