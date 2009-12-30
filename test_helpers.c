@@ -115,7 +115,7 @@ static int new_handler(ZEND_OPCODE_HANDLER_ARGS)
 
 /* {{{ PHP_MINIT_FUNCTION
  */
-PHP_MINIT_FUNCTION(test_helpers)
+static PHP_MINIT_FUNCTION(test_helpers)
 {
 	zend_set_user_opcode_handler(ZEND_NEW, new_handler);
 
@@ -125,7 +125,7 @@ PHP_MINIT_FUNCTION(test_helpers)
 
 /* {{{ PHP_MSHUTDOWN_FUNCTION
  */
-PHP_MSHUTDOWN_FUNCTION(test_helpers)
+static PHP_MSHUTDOWN_FUNCTION(test_helpers)
 {
 	return SUCCESS;
 }
@@ -133,7 +133,7 @@ PHP_MSHUTDOWN_FUNCTION(test_helpers)
 
 /* {{{ PHP_RINIT_FUNCTION
  */
-PHP_RINIT_FUNCTION(test_helpers)
+static PHP_RINIT_FUNCTION(test_helpers)
 {
 	THG(fci).function_table = NULL;
 
@@ -143,7 +143,7 @@ PHP_RINIT_FUNCTION(test_helpers)
 
 /* {{{ PHP_RSHUTDOWN_FUNCTION
  */
-PHP_RSHUTDOWN_FUNCTION(test_helpers)
+static PHP_RSHUTDOWN_FUNCTION(test_helpers)
 {
 	test_helpers_free_new_handler(TSRMLS_C);
 	return SUCCESS;
@@ -152,7 +152,7 @@ PHP_RSHUTDOWN_FUNCTION(test_helpers)
 
 /* {{{ PHP_MINFO_FUNCTION
  */
-PHP_MINFO_FUNCTION(test_helpers)
+static PHP_MINFO_FUNCTION(test_helpers)
 {
 	php_info_print_table_start();
 	php_info_print_table_header(2, "test_helpers support", "enabled");
@@ -162,7 +162,7 @@ PHP_MINFO_FUNCTION(test_helpers)
 
 /* {{{ proto bool unregister_new_overload()
    Remove the current new handler */
-PHP_FUNCTION(unregister_new_overload)
+static PHP_FUNCTION(unregister_new_overload)
 {
 	if (zend_parse_parameters_none() == FAILURE) {
 		return;
@@ -175,7 +175,7 @@ PHP_FUNCTION(unregister_new_overload)
 
 /* {{{ proto bool register_new_overload(callback cb)
    Register a callback, called on instantiation of a new object */
-PHP_FUNCTION(register_new_overload)
+static PHP_FUNCTION(register_new_overload)
 {
 	zend_fcall_info fci;
     zend_fcall_info_cache fcc;
@@ -212,7 +212,7 @@ ZEND_END_ARG_INFO()
 
 /* {{{ test_helpers_functions[]
  */
-const zend_function_entry test_helpers_functions[] = {
+static const zend_function_entry test_helpers_functions[] = {
 	PHP_FE(unregister_new_overload, arginfo_unregister_new_overload)
 	PHP_FE(register_new_overload, arginfo_register_new_overload)
 	{NULL, NULL, NULL}
