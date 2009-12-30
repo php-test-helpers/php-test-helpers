@@ -132,6 +132,12 @@ PHP_RINIT_FUNCTION(test_helpers)
  */
 PHP_RSHUTDOWN_FUNCTION(test_helpers)
 {
+	if (THG(fci).function_name) {
+		zval_ptr_dtor(&THG(fci).function_name);
+	}
+	if (THG(fci).object_ptr) {
+		zval_ptr_dtor(&THG(fci).object_ptr);
+	}
 	return SUCCESS;
 }
 /* }}} */
@@ -152,6 +158,11 @@ PHP_FUNCTION(register_new_overload)
 {
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "f", &THG(fci), &THG(fcc)) == FAILURE) {
 		return;
+	}
+
+	Z_ADDREF_P(THG(fci).function_name);
+	if (THG(fci).object_ptr) {
+		Z_ADDREF_P(THG(fci).object_ptr);
 	}
 
 	RETURN_TRUE;
