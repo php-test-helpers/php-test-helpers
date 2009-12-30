@@ -11,7 +11,7 @@ currently not supported by the implementation but nice to have
 class Foo {}
 
 function callback($className) {
-    return new Foo;
+    return 'Foo';
 }
 
 register_new_overload('callback');
