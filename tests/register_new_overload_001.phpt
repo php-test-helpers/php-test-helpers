@@ -10,7 +10,7 @@ class Foo {}
 class Bar {}
 
 function callback($className) {
-    return new Foo;
+    return 'Foo';
 }
 
 var_dump(register_new_overload('callback'));
