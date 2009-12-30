@@ -7,6 +7,7 @@ if (!extension_loaded('test_helpers')) die('test_helpers extension not loaded');
 --FILE--
 <?php
 class Foo {}
+class Bar {}
 
 function callback($className) {
     return new Foo;
