@@ -146,7 +146,7 @@ PHP_MINFO_FUNCTION(test_helpers)
 }
 /* }}} */
 
-/* {{{ proto booboolgister_new_overload(callback cb)
+/* {{{ proto bool register_new_overload(callback cb)
    Register a callback, called on instantiation of a new object */
 PHP_FUNCTION(register_new_overload)
 {
