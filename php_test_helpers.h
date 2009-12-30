@@ -35,6 +35,7 @@
   | POSSIBILITY OF SUCH DAMAGE.                                          |
   +----------------------------------------------------------------------+
   | Author: Sebastian Bergmann <sb@sebastian-bergmann.de>                |
+  |         Johannes Schlüter <johannes@schlueters.de>                   |
   +----------------------------------------------------------------------+
 */
 
@@ -62,11 +63,18 @@ PHP_RINIT_FUNCTION(test_helpers);
 PHP_RSHUTDOWN_FUNCTION(test_helpers);
 PHP_MINFO_FUNCTION(test_helpers);
 
+ZEND_BEGIN_MODULE_GLOBALS(test_helpers)
+	zend_fcall_info fci;
+	zend_fcall_info_cache fcc;
+ZEND_END_MODULE_GLOBALS(test_helpers)
+
 #ifdef ZTS
 #define TEST_HELPERS_G(v) TSRMG(test_helpers_globals_id, zend_test_helpers_globals *, v)
 #else
 #define TEST_HELPERS_G(v) (test_helpers_globals.v)
 #endif
+
+#define THG(v) TEST_HELPERS_G(v)
 
 #endif	/* PHP_TEST_HELPERS_H */
 
