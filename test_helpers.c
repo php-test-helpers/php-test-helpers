@@ -146,11 +146,15 @@ PHP_MINFO_FUNCTION(test_helpers)
 }
 /* }}} */
 
-/* {{{ proto void register_new_overload(callback cb)
+/* {{{ proto booboolgister_new_overload(callback cb)
    Register a callback, called on instantiation of a new object */
 PHP_FUNCTION(register_new_overload)
 {
-	zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "f", &THG(fci), &THG(fcc));
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "f", &THG(fci), &THG(fcc)) == FAILURE) {
+		return;
+	}
+
+	RETURN_TRUE;
 }
 /* }}} */
 
