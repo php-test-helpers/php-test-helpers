@@ -1,0 +1,6 @@
+ARG_ENABLE("test_helpers", "enable test_helpers support", "no");
+
+if (PHP_TEST_HELPERS != "no") {
+	EXTENSION("test_helpers", "test_helpers.c");
+}
+
