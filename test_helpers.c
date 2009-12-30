@@ -197,11 +197,24 @@ PHP_FUNCTION(register_new_overload)
 }
 /* }}} */
 
+/* {{{ arginfo */
+/* {{{ unregister_new_overload */
+ZEND_BEGIN_ARG_INFO(arginfo_unregister_new_overload, 0)
+ZEND_END_ARG_INFO()
+/* }}} */
+
+/* {{{ register_new_overload */
+ZEND_BEGIN_ARG_INFO(arginfo_register_new_overload, 0)
+	ZEND_ARG_INFO(0, "callback")
+ZEND_END_ARG_INFO()
+/* }}} */
+/* }}} */
+
 /* {{{ test_helpers_functions[]
  */
 const zend_function_entry test_helpers_functions[] = {
-	PHP_FE(unregister_new_overload, NULL)
-	PHP_FE(register_new_overload, NULL)
+	PHP_FE(unregister_new_overload, arginfo_unregister_new_overload)
+	PHP_FE(register_new_overload, arginfo_register_new_overload)
 	{NULL, NULL, NULL}
 };
 /* }}} */
