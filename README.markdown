@@ -63,7 +63,7 @@ In a perfect world, code such as the above could be refactored using [Dependency
 
 Unfortunately, this is not always possible (not because of technical reasons, though).
 
-This is where the `register_new_overload()` function comes into play. It can be used to register a [callback](http://www.php.net/manual/en/language.pseudo-types.php) that is automatically invoked when the `new` operator is executed.
+This is where the `test_helpers_set_new_overload()` function comes into play. It can be used to register a [callback](http://www.php.net/manual/en/language.pseudo-types.php) that is automatically invoked when the `new` operator is executed.
 
     <?php
     class Foo {}
@@ -79,7 +79,7 @@ This is where the `register_new_overload()` function comes into play. It can be 
 
     var_dump(get_class(new Foo));
 
-    register_new_overload('callback');
+    test_helpers_set_new_overload('callback');
 
     var_dump(get_class(new Foo));
     ?>
@@ -97,9 +97,9 @@ If this is needed just temporarily the handler can also be unregistered.
         return 'Bar';
     }
 
-    register_new_overload('callback');
+    test_helpers_set_new_overload('callback');
     var_dump(get_class(new Foo));
-    unregister_new_overload();
+    test_helpers_unset_new_overload();
     var_dump(get_class(new Foo));
     ?>
 

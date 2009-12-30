@@ -1,5 +1,5 @@
 --TEST--
-register_new_overload() returning non-existing class
+test_helpers_set_new_overload() returning non-existing class
 --SKIPIF--
 <?php 
 if (!extension_loaded('test_helpers')) die('skip test_helpers extension not loaded');
@@ -12,7 +12,7 @@ function callback($className) {
     return 'Foo';
 }
 
-var_dump(register_new_overload('callback'));
+var_dump(test_helpers_set_new_overload('callback'));
 
 var_dump(get_class(new Bar));
 --EXPECTF--
