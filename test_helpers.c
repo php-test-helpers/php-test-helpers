@@ -222,9 +222,7 @@ const zend_function_entry test_helpers_functions[] = {
 /* {{{ test_helpers_module_entry
  */
 zend_module_entry test_helpers_module_entry = {
-#if ZEND_MODULE_API_NO >= 20010901
 	STANDARD_MODULE_HEADER,
-#endif
 	"test_helpers",
 	test_helpers_functions,
 	PHP_MINIT(test_helpers),
@@ -232,9 +230,7 @@ zend_module_entry test_helpers_module_entry = {
 	PHP_RINIT(test_helpers),
 	PHP_RSHUTDOWN(test_helpers),
 	PHP_MINFO(test_helpers),
-#if ZEND_MODULE_API_NO >= 20010901
-	"1.0", /* Replace with version number for your extension */
-#endif
+	TEST_HELPERS_VERSION,
 	STANDARD_MODULE_PROPERTIES
 };
 /* }}} */
