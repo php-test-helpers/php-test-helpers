@@ -17,6 +17,8 @@ Add `ext/test_helpers` to your `php.ini` configuration file:
 
     extension=test_helpers.so
 
+Further information about building stand-alone extensions for PHP can be found in the [Installation of PECL extensions](http://php.net/install.pecl) section of the PHP manual.
+
 ## Usage ##
 
 ### Intercepting Object Creation ###
@@ -84,4 +86,23 @@ This is where the `register_new_overload()` function comes into play. It can be 
 
     string(3) "Foo"
     string(3) "Bar"
+
+If this is needed just temporarily the handler can also be unregistered.
+
+    <?php
+    class Foo {}
+    class Bar {}
+
+    function callback($className) {
+        return 'Bar';
+    }
+
+    register_new_overload('callback');
+    var_dump(get_class(new Foo));
+    unregister_new_overload();
+    var_dump(get_class(new Foo));
+    ?>
+
+    string(3) "Bar"
+    string(3) "Foo"
 
