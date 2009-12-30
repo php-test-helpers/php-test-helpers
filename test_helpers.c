@@ -115,7 +115,7 @@ static int new_handler(ZEND_OPCODE_HANDLER_ARGS)
 
 /* {{{ PHP_MINIT_FUNCTION
  */
-PHP_MINIT_FUNCTION(test_helpers)
+static PHP_MINIT_FUNCTION(test_helpers)
 {
 	zend_set_user_opcode_handler(ZEND_NEW, new_handler);
 
@@ -125,7 +125,7 @@ PHP_MINIT_FUNCTION(test_helpers)
 
 /* {{{ PHP_MSHUTDOWN_FUNCTION
  */
-PHP_MSHUTDOWN_FUNCTION(test_helpers)
+static PHP_MSHUTDOWN_FUNCTION(test_helpers)
 {
 	return SUCCESS;
 }
@@ -133,7 +133,7 @@ PHP_MSHUTDOWN_FUNCTION(test_helpers)
 
 /* {{{ PHP_RINIT_FUNCTION
  */
-PHP_RINIT_FUNCTION(test_helpers)
+static PHP_RINIT_FUNCTION(test_helpers)
 {
 	THG(fci).function_table = NULL;
 
@@ -143,7 +143,7 @@ PHP_RINIT_FUNCTION(test_helpers)
 
 /* {{{ PHP_RSHUTDOWN_FUNCTION
  */
-PHP_RSHUTDOWN_FUNCTION(test_helpers)
+static PHP_RSHUTDOWN_FUNCTION(test_helpers)
 {
 	test_helpers_free_new_handler(TSRMLS_C);
 	return SUCCESS;
@@ -152,7 +152,7 @@ PHP_RSHUTDOWN_FUNCTION(test_helpers)
 
 /* {{{ PHP_MINFO_FUNCTION
  */
-PHP_MINFO_FUNCTION(test_helpers)
+static PHP_MINFO_FUNCTION(test_helpers)
 {
 	php_info_print_table_start();
 	php_info_print_table_header(2, "test_helpers support", "enabled");
@@ -162,7 +162,7 @@ PHP_MINFO_FUNCTION(test_helpers)
 
 /* {{{ proto bool test_helpers_unset_new_overload()
    Remove the current new handler */
-PHP_FUNCTION(test_helpers_unset_new_overload)
+static PHP_FUNCTION(test_helpers_unset_new_overload)
 {
 	if (zend_parse_parameters_none() == FAILURE) {
 		return;
@@ -175,7 +175,7 @@ PHP_FUNCTION(test_helpers_unset_new_overload)
 
 /* {{{ proto bool test_helpers_set_new_overload(callback cb)
    Register a callback, called on instantiation of a new object */
-PHP_FUNCTION(test_helpers_set_new_overload)
+static PHP_FUNCTION(test_helpers_set_new_overload)
 {
 	zend_fcall_info fci;
     zend_fcall_info_cache fcc;
@@ -212,7 +212,7 @@ ZEND_END_ARG_INFO()
 
 /* {{{ test_helpers_functions[]
  */
-const zend_function_entry test_helpers_functions[] = {
+static const zend_function_entry test_helpers_functions[] = {
 	PHP_FE(test_helpers_unset_new_overload, arginfo_test_helpers_unset_new_overload)
 	PHP_FE(test_helpers_set_new_overload, arginfo_test_helpers_set_new_overload)
 	{NULL, NULL, NULL}
@@ -222,9 +222,7 @@ const zend_function_entry test_helpers_functions[] = {
 /* {{{ test_helpers_module_entry
  */
 zend_module_entry test_helpers_module_entry = {
-#if ZEND_MODULE_API_NO >= 20010901
 	STANDARD_MODULE_HEADER,
-#endif
 	"test_helpers",
 	test_helpers_functions,
 	PHP_MINIT(test_helpers),
@@ -232,9 +230,7 @@ zend_module_entry test_helpers_module_entry = {
 	PHP_RINIT(test_helpers),
 	PHP_RSHUTDOWN(test_helpers),
 	PHP_MINFO(test_helpers),
-#if ZEND_MODULE_API_NO >= 20010901
-	"1.0", /* Replace with version number for your extension */
-#endif
+	TEST_HELPERS_VERSION,
 	STANDARD_MODULE_PROPERTIES
 };
 /* }}} */

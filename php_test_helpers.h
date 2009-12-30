@@ -57,6 +57,8 @@ extern zend_module_entry test_helpers_module_entry;
 #include "TSRM.h"
 #endif
 
+#define TEST_HELPERS_VERSION "0.5.0-dev"
+
 ZEND_BEGIN_MODULE_GLOBALS(test_helpers)
 	zend_fcall_info fci;
 	zend_fcall_info_cache fcc;
