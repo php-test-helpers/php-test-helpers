@@ -27,3 +27,4 @@ missing
 mkinstalldirs
 run-tests.php
 tmp-php.ini
+autom4te.cache
