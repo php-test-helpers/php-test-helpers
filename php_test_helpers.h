@@ -57,12 +57,6 @@ extern zend_module_entry test_helpers_module_entry;
 #include "TSRM.h"
 #endif
 
-PHP_MINIT_FUNCTION(test_helpers);
-PHP_MSHUTDOWN_FUNCTION(test_helpers);
-PHP_RINIT_FUNCTION(test_helpers);
-PHP_RSHUTDOWN_FUNCTION(test_helpers);
-PHP_MINFO_FUNCTION(test_helpers);
-
 ZEND_BEGIN_MODULE_GLOBALS(test_helpers)
 	zend_fcall_info fci;
 	zend_fcall_info_cache fcc;
