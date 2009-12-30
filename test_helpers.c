@@ -59,6 +59,18 @@ ZEND_GET_MODULE(test_helpers)
 #define EX(element) execute_data->element
 #define EX_T(offset) (*(temp_variable *)((char *) EX(Ts) + offset))
 
+static void test_helpers_free_new_handler(TSRMLS_D) /* {{{ */
+{
+	if (THG(fci).function_name) {
+		zval_ptr_dtor(&THG(fci).function_name);
+		THG(fci).function_table = NULL;
+	}
+	if (THG(fci).object_ptr) {
+		zval_ptr_dtor(&THG(fci).object_ptr);
+	}
+}
+/* }}} */
+ 
 /* {{{ new_handler
  */
 static int new_handler(ZEND_OPCODE_HANDLER_ARGS)
@@ -133,12 +145,7 @@ PHP_RINIT_FUNCTION(test_helpers)
  */
 PHP_RSHUTDOWN_FUNCTION(test_helpers)
 {
-	if (THG(fci).function_name) {
-		zval_ptr_dtor(&THG(fci).function_name);
-	}
-	if (THG(fci).object_ptr) {
-		zval_ptr_dtor(&THG(fci).object_ptr);
-	}
+	test_helpers_free_new_handler(TSRMLS_C);
 	return SUCCESS;
 }
 /* }}} */
@@ -153,14 +160,34 @@ PHP_MINFO_FUNCTION(test_helpers)
 }
 /* }}} */
 
+/* {{{ proto bool unregister_new_overload()
+   Remove the current new handler */
+PHP_FUNCTION(unregister_new_overload)
+{
+	if (zend_parse_parameters_none() == FAILURE) {
+		return;
+	}
+
+	test_helpers_free_new_handler(TSRMLS_C);
+	RETURN_TRUE;
+}
+/* }}} */
+
 /* {{{ proto bool register_new_overload(callback cb)
    Register a callback, called on instantiation of a new object */
 PHP_FUNCTION(register_new_overload)
 {
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "f", &THG(fci), &THG(fcc)) == FAILURE) {
+	zend_fcall_info fci;
+    zend_fcall_info_cache fcc;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "f", &fci, &fcc) == FAILURE) {
 		return;
 	}
 
+	test_helpers_free_new_handler(TSRMLS_C);
+
+	THG(fci) = fci;
+	THG(fcc) = fcc;
 	Z_ADDREF_P(THG(fci).function_name);
 	if (THG(fci).object_ptr) {
 		Z_ADDREF_P(THG(fci).object_ptr);
@@ -173,6 +200,7 @@ PHP_FUNCTION(register_new_overload)
 /* {{{ test_helpers_functions[]
  */
 const zend_function_entry test_helpers_functions[] = {
+	PHP_FE(unregister_new_overload, NULL)
 	PHP_FE(register_new_overload, NULL)
 	{NULL, NULL, NULL}
 };
