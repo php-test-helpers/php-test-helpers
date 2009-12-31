@@ -80,7 +80,6 @@ This is where the `set_new_overload()` function comes into play. It can be used 
     var_dump(get_class(new Foo));
 
     set_new_overload('callback');
-
     var_dump(get_class(new Foo));
     ?>
 
@@ -99,6 +98,7 @@ If this is needed just temporarily the handler can also be unregistered.
 
     set_new_overload('callback');
     var_dump(get_class(new Foo));
+
     unset_new_overload();
     var_dump(get_class(new Foo));
     ?>
