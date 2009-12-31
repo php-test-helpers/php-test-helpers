@@ -1,5 +1,5 @@
 --TEST--
-set_new_overload() withan object method
+set_new_overload() with an object method
 --SKIPIF--
 <?php 
 if (!extension_loaded('test_helpers')) die('skip test_helpers extension not loaded');
