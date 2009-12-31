@@ -1,5 +1,5 @@
 --TEST--
-set_new_overload() undefined callback
+A warning is triggered when the callback passed to set_new_overload() is not defined
 --SKIPIF--
 <?php 
 if (!extension_loaded('test_helpers')) die('skip test_helpers extension not loaded');

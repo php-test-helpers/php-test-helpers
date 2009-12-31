@@ -1,5 +1,5 @@
 --TEST--
-set_new_overload() with an object method
+A non-static method can be registered as a callback with set_new_overload()
 --SKIPIF--
 <?php 
 if (!extension_loaded('test_helpers')) die('skip test_helpers extension not loaded');

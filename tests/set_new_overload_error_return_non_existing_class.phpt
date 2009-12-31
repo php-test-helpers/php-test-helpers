@@ -1,5 +1,5 @@
 --TEST--
-set_new_overload() returning non-existing class
+A fatal error is triggered when the class returned by the callback does not exist
 --SKIPIF--
 <?php 
 if (!extension_loaded('test_helpers')) die('skip test_helpers extension not loaded');
