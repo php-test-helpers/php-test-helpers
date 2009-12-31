@@ -160,9 +160,9 @@ static PHP_MINFO_FUNCTION(test_helpers)
 }
 /* }}} */
 
-/* {{{ proto bool test_helpers_unset_new_overload()
+/* {{{ proto bool unset_new_overload()
    Remove the current new handler */
-static PHP_FUNCTION(test_helpers_unset_new_overload)
+static PHP_FUNCTION(unset_new_overload)
 {
 	if (zend_parse_parameters_none() == FAILURE) {
 		return;
@@ -173,9 +173,9 @@ static PHP_FUNCTION(test_helpers_unset_new_overload)
 }
 /* }}} */
 
-/* {{{ proto bool test_helpers_set_new_overload(callback cb)
+/* {{{ proto bool set_new_overload(callback cb)
    Register a callback, called on instantiation of a new object */
-static PHP_FUNCTION(test_helpers_set_new_overload)
+static PHP_FUNCTION(set_new_overload)
 {
 	zend_fcall_info fci;
     zend_fcall_info_cache fcc;
@@ -198,13 +198,13 @@ static PHP_FUNCTION(test_helpers_set_new_overload)
 /* }}} */
 
 /* {{{ arginfo */
-/* {{{ test_helpers_unset_new_overload */
-ZEND_BEGIN_ARG_INFO(arginfo_test_helpers_unset_new_overload, 0)
+/* {{{ unset_new_overload */
+ZEND_BEGIN_ARG_INFO(arginfo_unset_new_overload, 0)
 ZEND_END_ARG_INFO()
 /* }}} */
 
-/* {{{ test_helpers_set_new_overload */
-ZEND_BEGIN_ARG_INFO(arginfo_test_helpers_set_new_overload, 0)
+/* {{{ set_new_overload */
+ZEND_BEGIN_ARG_INFO(arginfo_set_new_overload, 0)
 	ZEND_ARG_INFO(0, "callback")
 ZEND_END_ARG_INFO()
 /* }}} */
@@ -213,8 +213,8 @@ ZEND_END_ARG_INFO()
 /* {{{ test_helpers_functions[]
  */
 static const zend_function_entry test_helpers_functions[] = {
-	PHP_FE(test_helpers_unset_new_overload, arginfo_test_helpers_unset_new_overload)
-	PHP_FE(test_helpers_set_new_overload, arginfo_test_helpers_set_new_overload)
+	PHP_FE(unset_new_overload, arginfo_unset_new_overload)
+	PHP_FE(set_new_overload, arginfo_set_new_overload)
 	{NULL, NULL, NULL}
 };
 /* }}} */

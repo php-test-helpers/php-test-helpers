@@ -1,5 +1,5 @@
 --TEST--
-test_helpers_set_new_overload() with a static method
+set_new_overload() with a static method
 --SKIPIF--
 <?php 
 if (!extension_loaded('test_helpers')) die('skip test_helpers extension not loaded');
@@ -15,7 +15,7 @@ class CB {
     }
 }
 
-var_dump(test_helpers_set_new_overload(array('CB', 'callback')));
+var_dump(set_new_overload(array('CB', 'callback')));
 
 var_dump(get_class(new Bar));
 --EXPECT--
