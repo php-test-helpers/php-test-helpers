@@ -106,3 +106,14 @@ The `new` operator callback can be unset when it is no longer required:
     string(3) "Bar"
     string(3) "Foo"
 
+#### Class Posing ####
+
+The `set_new_overload()` function can be used to implement a programming language feature named *Class Posing*. [The implementation of Class Posing in Objective-C](http://en.wikipedia.org/wiki/Objective-C#Posing), for instance, permits a class to wholly replace another class within a program. The replacing class is said to "pose as" the target class.
+
+Class Posing has the following restrictions
+
+* A class may only pose as one of its direct or indirect superclasses
+* The posing class must not define any new instance variables which are absent from the target class (though it may define or override methods).
+* The target class may not have received any messages prior to the posing.
+
+These restrictions are not enforced by `ext/test_helpers` because the extension is only intended to ease the development of unit tests (for legacy software systems than cannot be refactored to use Dependency Injection).
