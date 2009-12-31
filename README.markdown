@@ -63,7 +63,7 @@ In a perfect world, code such as the above could be refactored using [Dependency
 
 Unfortunately, this is not always possible (not because of technical reasons, though).
 
-This is where the `set_new_overload()` function comes into play. It can be used to register a [callback](http://www.php.net/manual/en/language.pseudo-types.php) that is automatically invoked when the `new` operator is executed.
+This is where the `set_new_overload()` function comes into play. It can be used to register a [callback](http://www.php.net/manual/en/language.pseudo-types.php) that is automatically invoked when the `new` operator is executed:
 
     <?php
     class Foo {}
@@ -86,7 +86,7 @@ This is where the `set_new_overload()` function comes into play. It can be used 
     string(3) "Foo"
     string(3) "Bar"
 
-If this is needed just temporarily the handler can also be unregistered.
+The `new` operator callback can be unset when it is no longer required:
 
     <?php
     class Foo {}
