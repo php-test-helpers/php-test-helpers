@@ -178,7 +178,7 @@ static PHP_FUNCTION(unset_new_overload)
 static PHP_FUNCTION(set_new_overload)
 {
 	zend_fcall_info fci;
-    zend_fcall_info_cache fcc;
+	zend_fcall_info_cache fcc;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "f", &fci, &fcc) == FAILURE) {
 		return;
