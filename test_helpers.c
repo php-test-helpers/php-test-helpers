@@ -114,29 +114,19 @@ static int new_handler(ZEND_OPCODE_HANDLER_ARGS)
 }
 /* }}} */
 
+static void php_test_helpers_init_globals(zend_test_helpers_globals *globals) /* {{{ */
+{
+	globals->fci.function_name = NULL;
+	globals->fci.object_ptr = NULL;
+}
+/* }}} */
+
 /* {{{ PHP_MINIT_FUNCTION
  */
 static PHP_MINIT_FUNCTION(test_helpers)
 {
+	ZEND_INIT_MODULE_GLOBALS(test_helpers, php_test_helpers_init_globals, NULL);
 	zend_set_user_opcode_handler(ZEND_NEW, new_handler);
-
-	return SUCCESS;
-}
-/* }}} */
-
-/* {{{ PHP_MSHUTDOWN_FUNCTION
- */
-static PHP_MSHUTDOWN_FUNCTION(test_helpers)
-{
-	return SUCCESS;
-}
-/* }}} */
-
-/* {{{ PHP_RINIT_FUNCTION
- */
-static PHP_RINIT_FUNCTION(test_helpers)
-{
-	THG(fci).function_name = NULL;
 
 	return SUCCESS;
 }
@@ -227,8 +217,8 @@ zend_module_entry test_helpers_module_entry = {
 	"test_helpers",
 	test_helpers_functions,
 	PHP_MINIT(test_helpers),
-	PHP_MSHUTDOWN(test_helpers),
-	PHP_RINIT(test_helpers),
+	NULL,
+	NULL,
 	PHP_RSHUTDOWN(test_helpers),
 	PHP_MINFO(test_helpers),
 	TEST_HELPERS_VERSION,
