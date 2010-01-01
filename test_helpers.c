@@ -63,7 +63,6 @@ static void test_helpers_free_new_handler(TSRMLS_D) /* {{{ */
 {
 	if (THG(fci).function_name) {
 		zval_ptr_dtor(&THG(fci).function_name);
-		THG(fci).function_table = NULL;
 		THG(fci).function_name = NULL;
 	}
 	if (THG(fci).object_ptr) {
@@ -81,7 +80,7 @@ static int new_handler(ZEND_OPCODE_HANDLER_ARGS)
 	zend_op *opline = EX(opline);
 	zend_class_entry *old_ce, **new_ce;
 
-	if (THG(fci).function_table == NULL) {
+	if (THG(fci).function_name == NULL) {
 		return ZEND_USER_OPCODE_DISPATCH;
 	}
 
@@ -137,7 +136,7 @@ static PHP_MSHUTDOWN_FUNCTION(test_helpers)
  */
 static PHP_RINIT_FUNCTION(test_helpers)
 {
-	THG(fci).function_table = NULL;
+	THG(fci).function_name = NULL;
 
 	return SUCCESS;
 }
