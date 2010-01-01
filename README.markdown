@@ -124,4 +124,4 @@ Class Posing has the following restrictions
 * The posing class must not define any new instance variables which are absent from the target class (though it may define or override methods).
 * The target class may not have received any messages prior to the posing.
 
-These restrictions are not enforced by `ext/test_helpers` because the extension is only intended to ease the development of unit tests (for legacy software systems than cannot be refactored to use Dependency Injection).
+These restrictions are not enforced by `ext/test_helpers` because the extension is only intended to ease the development of unit tests (for legacy software systems that cannot be refactored to use Dependency Injection).
