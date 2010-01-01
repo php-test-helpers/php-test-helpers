@@ -4,18 +4,26 @@
 
 ## Installation ##
 
-Clone the `ext/test_helpers` repository and build the extension:
+`ext/test_helpers` should be installed using the [PEAR Installer](http://pear.php.net/). This installer is the backbone of PEAR and PECL, which provides a distribution system for PHP packages and extensions, and is shipped with every release of PHP since version 4.3.0.
 
-    $ git clone git://github.com/sebastianbergmann/php-test-helpers.git
-    $ cd php-test-helpers
-    $ phpize
-    $ ./configure
-    $ make
-    $ make install
+The PEAR channel (`pear.phpunit.de`) that is used to distribute `ext/test_helpers` needs to be registered with the local PEAR environment:
 
-Add `ext/test_helpers` to your `php.ini` configuration file:
+    sb@ubuntu ~ % pear channel-discover pear.phpunit.de
+    Adding Channel "pear.phpunit.de" succeeded
+    Discovery of channel "pear.phpunit.de" succeeded
 
-    extension=test_helpers.so
+This has to be done only once. Now the PEAR Installer can be used to install extensions and packages from the PHPUnit channel:
+
+    sb@ubuntu ~ % pecl install phpunit/test_helpers
+    downloading test_helpers-1.0.0.tgz ...
+    Starting to download test_helpers-1.0.0.tgz (6,980 bytes)
+    .....done: 6,980 bytes
+    4 source files, building
+    .
+    .
+    .
+    install ok: channel://pear.phpunit.de/test_helpers-1.0.0
+    You should add "extension=test_helpers.so" to php.ini
 
 Further information about building stand-alone extensions for PHP can be found in the [Installation of PECL extensions](http://php.net/install.pecl) section of the PHP manual.
 
