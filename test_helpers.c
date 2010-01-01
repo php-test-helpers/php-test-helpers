@@ -64,9 +64,11 @@ static void test_helpers_free_new_handler(TSRMLS_D) /* {{{ */
 	if (THG(fci).function_name) {
 		zval_ptr_dtor(&THG(fci).function_name);
 		THG(fci).function_table = NULL;
+		THG(fci).function_name = NULL;
 	}
 	if (THG(fci).object_ptr) {
 		zval_ptr_dtor(&THG(fci).object_ptr);
+		THG(fci).object_ptr = NULL;
 	}
 }
 /* }}} */
