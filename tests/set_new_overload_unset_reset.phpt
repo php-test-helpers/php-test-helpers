@@ -1,7 +1,7 @@
 --TEST--
 set_new_overload() can be called after unset_new_overload()
 --SKIPIF--
-<?php 
+<?php
 if (!extension_loaded('test_helpers')) die('skip test_helpers extension not loaded');
 ?>
 --FILE--

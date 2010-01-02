@@ -1,7 +1,7 @@
 --TEST--
 A fatal error is triggered when the class returned by the callback does not exist
 --SKIPIF--
-<?php 
+<?php
 if (!extension_loaded('test_helpers')) die('skip test_helpers extension not loaded');
 ?>
 --FILE--

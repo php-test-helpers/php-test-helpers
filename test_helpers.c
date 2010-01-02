@@ -71,7 +71,7 @@ static void test_helpers_free_new_handler(TSRMLS_D) /* {{{ */
 	}
 }
 /* }}} */
- 
+
 /* {{{ new_handler
  */
 static int new_handler(ZEND_OPCODE_HANDLER_ARGS)

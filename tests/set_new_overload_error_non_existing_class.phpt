@@ -1,7 +1,7 @@
 --TEST--
 Callback for the new operator is invoked for non-existing classes
 --SKIPIF--
-<?php 
+<?php
 if (!extension_loaded('test_helpers')) die('skip test_helpers extension not loaded');
 ?>
 --XFAIL--
