@@ -14,7 +14,7 @@ function callback1($className) {
     return 'Foo1';
 }
 
-function callback2($classname) {
+function callback2($className) {
     return 'foo2';
 }
 
