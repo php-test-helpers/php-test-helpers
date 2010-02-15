@@ -14,7 +14,7 @@ class CB {
         if ($className == 'Bar') {
             return 'Foo';
         } else {
-            return $classiName;
+            return $className;
         }
     }
 
