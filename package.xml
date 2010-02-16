@@ -46,6 +46,7 @@
     <file name="set_new_overload_functor.phpt" role="test" />
     <file name="set_new_overload_multiple.phpt" role="test" />
     <file name="set_new_overload_non_static_method.phpt" role="test" />
+    <file name="set_new_overload_non_static_method_same_object.phpt" role="test" />
     <file name="set_new_overload_private_method.phpt" role="test" />
     <file name="set_new_overload_static_method.phpt" role="test" />
     <file name="set_new_overload_unset_reset.phpt" role="test" />

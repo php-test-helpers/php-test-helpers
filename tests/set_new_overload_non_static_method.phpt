@@ -1,7 +1,7 @@
 --TEST--
 A non-static method can be registered as a callback with set_new_overload()
 --SKIPIF--
-<?php 
+<?php
 if (!extension_loaded('test_helpers')) die('skip test_helpers extension not loaded');
 ?>
 --FILE--
@@ -14,7 +14,7 @@ class CB {
         if ($className == 'Bar') {
             return 'Foo';
         } else {
-            return $classiName;
+            return $className;
         }
     }
 }
