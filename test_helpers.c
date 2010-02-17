@@ -48,6 +48,9 @@
 #include "ext/standard/info.h"
 #include "php_test_helpers.h"
 #include "Zend/zend_exceptions.h"
+#include "Zend/zend_extensions.h"
+
+static user_opcode_handler_t old_new_handler = NULL;
 
 ZEND_DECLARE_MODULE_GLOBALS(test_helpers)
 
@@ -81,7 +84,11 @@ static int new_handler(ZEND_OPCODE_HANDLER_ARGS)
 	zend_class_entry *old_ce, **new_ce;
 
 	if (THG(fci).function_name == NULL) {
-		return ZEND_USER_OPCODE_DISPATCH;
+		if (old_new_handler) {
+			return old_new_handler(ZEND_OPCODE_HANDLER_ARGS_PASSTHRU);
+		} else {
+			return ZEND_USER_OPCODE_DISPATCH;
+		}
 	}
 
 	old_ce = EX_T(opline->op1.u.var).class_entry;
@@ -102,6 +109,7 @@ static int new_handler(ZEND_OPCODE_HANDLER_ARGS)
 		zval_ptr_dtor(&arg);
 		zval_ptr_dtor(&retval);
 
+		/* TODO: What to do about the old handler */
 		return ZEND_USER_OPCODE_CONTINUE;
 	}
 
@@ -110,7 +118,11 @@ static int new_handler(ZEND_OPCODE_HANDLER_ARGS)
 
 	EX_T(opline->op1.u.var).class_entry = *new_ce;
 
-	return ZEND_USER_OPCODE_DISPATCH;
+	if (old_new_handler) {
+		return old_new_handler(ZEND_OPCODE_HANDLER_ARGS_PASSTHRU);
+	} else {
+		return ZEND_USER_OPCODE_DISPATCH;
+	}
 }
 /* }}} */
 
@@ -225,6 +237,44 @@ zend_module_entry test_helpers_module_entry = {
 	STANDARD_MODULE_PROPERTIES
 };
 /* }}} */
+
+static int test_helpers_zend_startup(zend_extension *extension) /* {{{ */
+{
+	/* PHP MINIT will have set this, but other zend extensions (Xdebug)
+	   might overwrite this, so register our function again */
+	user_opcode_handler_t current_new_handler = zend_get_user_opcode_handler(ZEND_NEW);
+	if (current_new_handler != new_handler) {
+		old_new_handler = current_new_handler;
+		zend_set_user_opcode_handler(ZEND_NEW, new_handler);
+	}
+	return SUCCESS;
+}
+/* }}} */
+
+#ifndef ZEND_EXT_API
+#define ZEND_EXT_API    ZEND_DLEXPORT
+#endif
+ZEND_EXTENSION();
+
+zend_extension zend_extension_entry = {
+	"test_helpers",
+	TEST_HELPERS_VERSION,
+	"Johannes Schlueter, Sebastian Bergmann",
+	"http://github.com/johannes/php-test-helpers",
+	"Copyright (c) 2009-2010",
+	test_helpers_zend_startup,
+	NULL,           /* shutdown_func_t */
+	NULL,           /* activate_func_t */
+	NULL,           /* deactivate_func_t */
+	NULL,           /* message_handler_func_t */
+	NULL,           /* op_array_handler_func_t */
+	NULL,           /* statement_handler_func_t */
+	NULL,           /* fcall_begin_handler_func_t */
+	NULL,           /* fcall_end_handler_func_t */
+	NULL,           /* op_array_ctor_func_t */
+	NULL,           /* op_array_dtor_func_t */
+	STANDARD_ZEND_EXTENSION_PROPERTIES
+};
 
 /*
  * Local variables:
