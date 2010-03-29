@@ -125,3 +125,12 @@ Class Posing has the following restrictions
 * The target class may not have received any messages prior to the posing.
 
 These restrictions are not enforced by `ext/test_helpers` because the extension is only intended to ease the development of unit tests (for legacy software systems that cannot be refactored to use Dependency Injection).
+
+## Notes ##
+
+If this extension is used in combination with other extensions, like xdebug, which are overloading the ZEND_NEW opcode you have to load it as regular PHP extension first and then additionally as zend_extension. Your php.ini might look similar like this then:
+
+    extension=php-test-helpers.so
+    zend_extension=xdebug.so
+    zend_extension=php-test-helpers.so
+
