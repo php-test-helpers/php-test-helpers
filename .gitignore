@@ -26,5 +26,6 @@ ltmain.sh
 missing
 mkinstalldirs
 run-tests.php
+test.ini
 tmp-php.ini
 autom4te.cache
