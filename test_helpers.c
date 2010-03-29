@@ -50,6 +50,14 @@
 #include "Zend/zend_exceptions.h"
 #include "Zend/zend_extensions.h"
 
+#if PHP_VERSION_ID < 50300
+typedef opcode_handler_t user_opcode_handler_t;
+
+#define Z_ADDREF_P(z) ((z)->refcount++)
+
+#define zend_parse_parameters_none() zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "")
+#endif
+
 static user_opcode_handler_t old_new_handler = NULL;
 
 ZEND_DECLARE_MODULE_GLOBALS(test_helpers)
@@ -68,10 +76,12 @@ static void test_helpers_free_new_handler(TSRMLS_D) /* {{{ */
 		zval_ptr_dtor(&THG(fci).function_name);
 		THG(fci).function_name = NULL;
 	}
+#if PHP_VERSION_ID >= 50300
 	if (THG(fci).object_ptr) {
 		zval_ptr_dtor(&THG(fci).object_ptr);
 		THG(fci).object_ptr = NULL;
 	}
+#endif
 }
 /* }}} */
 
@@ -129,7 +139,9 @@ static int new_handler(ZEND_OPCODE_HANDLER_ARGS)
 static void php_test_helpers_init_globals(zend_test_helpers_globals *globals) /* {{{ */
 {
 	globals->fci.function_name = NULL;
+#if PHP_VERSION_ID >= 50300
 	globals->fci.object_ptr = NULL;
+#endif
 }
 /* }}} */
 
@@ -192,9 +204,11 @@ static PHP_FUNCTION(set_new_overload)
 	THG(fci) = fci;
 	THG(fcc) = fcc;
 	Z_ADDREF_P(THG(fci).function_name);
+#if PHP_VERSION_ID >= 50300
 	if (THG(fci).object_ptr) {
 		Z_ADDREF_P(THG(fci).object_ptr);
 	}
+#endif
 
 	RETURN_TRUE;
 }
