@@ -48,7 +48,7 @@ Consider the following example:
     }
     ?>
 
-With the code above, it is impossible to run a unit test for the `SomeClass::doSomething()` method that does involve creating an object of `SomeOtherClass`. As the method creates the object of `SomeOtherClass` itself, we cannot inject a mock object in its stead.
+With the code above, it is impossible to run a unit test for the `SomeClass::doSomething()` method without also creating an object of `SomeOtherClass`. As the method creates the object of `SomeOtherClass` itself, we cannot inject a mock object in its stead.
 
 In a perfect world, code such as the above could be refactored using [Dependency Injection](http://en.wikipedia.org/wiki/Dependency_Injection):
 
