@@ -128,9 +128,10 @@ These restrictions are not enforced by `ext/test_helpers` because the extension 
 
 ## Notes ##
 
-If this extension is used in combination with other extensions, such as Xdebug, which are also overloading the `ZEND_NEW` opcode you have to load it as regular PHP extension first and then additionally as a `zend_extension`. This can be done in your `php.ini` like this:
+If this extension is used in combination with other extensions, such as Xdebug, which are also overloading the `ZEND_NEW` opcode you have to load it as `zend_extension` after loading the conflicting extension. This can be done in your `php.ini` like this:
 
-    extension=php-test-helpers.so
     zend_extension=xdebug.so
-    zend_extension=php-test-helpers.so
+    zend_extension=test-helpers.so
+
+Please refer to `phpinfo()` to verify whether a conflict was detected and whether the work-around was enabled.
 

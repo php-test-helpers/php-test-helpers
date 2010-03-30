@@ -179,8 +179,18 @@ static PHP_RSHUTDOWN_FUNCTION(test_helpers)
  */
 static PHP_MINFO_FUNCTION(test_helpers)
 {
+	char *conflict_text;
+
+	if (new_handler != zend_get_user_opcode_handler(ZEND_NEW)) {
+		conflict_text = "Yes. The work-around was NOT enabled. Please make sure test_helpers was loaded as zend_extension AFTER conflicting extensions like Xdebug!";
+	} else if (old_new_handler != NULL) {
+		conflict_text = "Yes, work-around enabled";
+	} else {
+		conflict_text = "No conflict detected";
+	}
 	php_info_print_table_start();
 	php_info_print_table_header(2, "test_helpers support", "enabled");
+	php_info_print_table_row(2, "Conflicting extension found", conflict_text);
 	php_info_print_table_end();
 }
 /* }}} */
@@ -207,6 +217,10 @@ static PHP_FUNCTION(set_new_overload)
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "f", &fci, &fcc) == FAILURE) {
 		return;
+	}
+
+	if (new_handler != zend_get_user_opcode_handler(ZEND_NEW)) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "A conflicting extension was detected. Make sure to load test_helpers as zend_extension after other extensions");
 	}
 
 	test_helpers_free_new_handler(TSRMLS_C);
