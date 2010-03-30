@@ -59,7 +59,7 @@ typedef opcode_handler_t user_opcode_handler_t;
 #endif
 
 static user_opcode_handler_t old_new_handler = NULL;
-static test_helpers_module_initilized = 0;
+static int test_helpers_module_initialized = 0;
 
 ZEND_DECLARE_MODULE_GLOBALS(test_helpers)
 
@@ -150,7 +150,7 @@ static void php_test_helpers_init_globals(zend_test_helpers_globals *globals) /*
  */
 static PHP_MINIT_FUNCTION(test_helpers)
 {
-	if (test_helpers_module_initilized) {
+	if (test_helpers_module_initialized) {
 		/* This should never happen as it is handled by the module loader, but let's play safe */
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "test_helpers had already been initialized! Either load it as regular PHP extension or zend_extension");
 		return FAILURE;
@@ -160,7 +160,7 @@ static PHP_MINIT_FUNCTION(test_helpers)
 	old_new_handler = zend_get_user_opcode_handler(ZEND_NEW);
 	zend_set_user_opcode_handler(ZEND_NEW, new_handler);
 
-	test_helpers_module_initilized = 1;
+	test_helpers_module_initialized = 1;
 
 	return SUCCESS;
 }
