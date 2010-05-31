@@ -34,8 +34,9 @@
   | ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE      |
   | POSSIBILITY OF SUCH DAMAGE.                                          |
   +----------------------------------------------------------------------+
-  | Author: Sebastian Bergmann <sb@sebastian-bergmann.de>                |
-  |         Johannes Schlüter <johannes@schlueters.de>                   |
+  | Author: Johannes Schlüter <johannes@schlueters.de>                   |
+  |         Scott MacVicar <scott@macvicar.net>                          |
+  |         Sebastian Bergmann <sb@sebastian-bergmann.de>                |
   +----------------------------------------------------------------------+
 */
 
