@@ -324,6 +324,13 @@ ZEND_BEGIN_ARG_INFO(arginfo_set_new_overload, 0)
 	ZEND_ARG_INFO(0, "callback")
 ZEND_END_ARG_INFO()
 /* }}} */
+
+/* {{{ rename_function */
+ZEND_BEGIN_ARG_INFO(arginfo_rename_function, 0)
+	ZEND_ARG_INFO(0, orig_func_name)
+	ZEND_ARG_INFO(0, new_func_name)
+ZEND_END_ARG_INFO()
+/* }}} */
 /* }}} */
 
 /* {{{ test_helpers_functions[]
@@ -331,7 +338,7 @@ ZEND_END_ARG_INFO()
 static const zend_function_entry test_helpers_functions[] = {
 	PHP_FE(unset_new_overload, arginfo_unset_new_overload)
 	PHP_FE(set_new_overload, arginfo_set_new_overload)
-	PHP_FE(rename_function, NULL)
+	PHP_FE(rename_function, arginfo_rename_function)
 	{NULL, NULL, NULL}
 };
 /* }}} */
