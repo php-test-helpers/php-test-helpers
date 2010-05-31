@@ -246,7 +246,7 @@ ZEND_END_ARG_INFO()
 
 /* {{{ set_new_overload */
 ZEND_BEGIN_ARG_INFO(arginfo_set_new_overload, 0)
-	ZEND_ARG_INFO(0, "callback")
+	ZEND_ARG_INFO(0, callback)
 ZEND_END_ARG_INFO()
 /* }}} */
 /* }}} */
