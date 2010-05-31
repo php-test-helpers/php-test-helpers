@@ -366,7 +366,7 @@ ZEND_EXTENSION();
 zend_extension zend_extension_entry = {
 	"test_helpers",
 	TEST_HELPERS_VERSION,
-	"Johannes Schlueter, Sebastian Bergmann",
+	"Johannes Schlueter, Scott MacVicar, Sebastian Bergmann",
 	"http://github.com/johannes/php-test-helpers",
 	"Copyright (c) 2009-2010",
 	test_helpers_zend_startup,
