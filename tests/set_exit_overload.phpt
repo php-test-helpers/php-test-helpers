@@ -1,5 +1,9 @@
 --TEST--
 set_exit_overload()
+--SKIPIF--
+<?php
+if (!extension_loaded('test_helpers')) die('skip test_helpers extension not loaded');
+?>
 --FILE--
 <?php
 set_exit_overload(function($arg = NULL) { var_dump($arg); echo "FALSE\n"; return false; });
