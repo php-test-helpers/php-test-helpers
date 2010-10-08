@@ -29,6 +29,27 @@ Further information about building stand-alone extensions for PHP can be found i
 
 ## Usage ##
 
+### Intercepting the Exit Statement ###
+
+When a [unit test](http://en.wikipedia.org/wiki/Unit_test) exercises code that contains an `exit` statement, the execution of the whole test suite is aborted. This is not a good thing.
+
+With the `set_exit_overload()` function it is possible to overload the `exit` statement and make it a no-op, for instance:
+
+    <?php
+    set_exit_overload(function() { return FALSE; }
+    exit;
+    print 'We did not exit.';
+    unset_exit_overload();
+    exit;
+    print 'We exited and this will not be printed.';
+    ?>
+
+The code above will output
+
+    We did not exit.
+
+Another way of dealing with low-level functions and statements such as `die()` and `exit` is to wrap them in a proxy that by default (in production) delegates to the native implementation but for testing has a "testable" behaviour.
+
 ### Intercepting Object Creation ###
 
 In a [unit test](http://en.wikipedia.org/wiki/Unit_test), [mock objects](http://en.wikipedia.org/wiki/Mock_Object) can simulate the behavior of complex, real (non-mock) objects and are therefore useful when a real object is difficult or impossible to incorporate into a unit test.
