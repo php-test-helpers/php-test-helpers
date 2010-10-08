@@ -60,8 +60,10 @@ extern zend_module_entry test_helpers_module_entry;
 #define TEST_HELPERS_VERSION "1.0.1-dev"
 
 ZEND_BEGIN_MODULE_GLOBALS(test_helpers)
-	zend_fcall_info fci;
-	zend_fcall_info_cache fcc;
+	zend_fcall_info new_fci;
+	zend_fcall_info_cache new_fcc;
+	zend_fcall_info exit_fci;
+	zend_fcall_info_cache exit_fcc;
 ZEND_END_MODULE_GLOBALS(test_helpers)
 
 #ifdef ZTS
