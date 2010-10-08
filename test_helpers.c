@@ -151,10 +151,9 @@ static int new_handler(ZEND_OPCODE_HANDLER_ARGS)
 	old_ce = EX_T(opline->op1.u.var).class_entry;
 
 	MAKE_STD_ZVAL(arg);
-	array_init(arg);
-	add_next_index_stringl(arg, old_ce->name, old_ce->name_length, 1);
+	ZVAL_STRINGL(arg, old_ce->name, old_ce->name_length, 1);
 
-	zend_fcall_info_args(&THG(new_fci), arg TSRMLS_CC);
+	zend_fcall_info_argn(&THG(new_fci) TSRMLS_CC, 1, &arg);
 	zend_fcall_info_call(&THG(new_fci), &THG(new_fcc), &retval, NULL TSRMLS_CC);
 	zend_fcall_info_args_clear(&THG(new_fci), 1);
 
@@ -186,7 +185,7 @@ static int new_handler(ZEND_OPCODE_HANDLER_ARGS)
 /* {{{ exit_handler */
 static int exit_handler(ZEND_OPCODE_HANDLER_ARGS)
 {
-	zval *arg, *msg, *freeop;
+	zval *msg, *freeop;
 	zval *retval;
 
 	if (THG(exit_fci).function_name == NULL) {
@@ -200,10 +199,7 @@ static int exit_handler(ZEND_OPCODE_HANDLER_ARGS)
 	msg = pth_get_zval_ptr(&EX(opline)->op1, &freeop, execute_data TSRMLS_CC);
 
 	if (msg) {
-		MAKE_STD_ZVAL(arg);
-		array_init(arg);
-	    add_next_index_zval(arg, msg);
-		zend_fcall_info_args(&THG(exit_fci), arg TSRMLS_CC);
+		zend_fcall_info_argn(&THG(exit_fci) TSRMLS_CC, 1, &msg);
 	}
 	zend_fcall_info_call(&THG(exit_fci), &THG(exit_fcc), &retval, NULL TSRMLS_CC);
 	zend_fcall_info_args_clear(&THG(exit_fci), 1);
