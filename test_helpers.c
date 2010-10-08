@@ -174,6 +174,7 @@ static int exit_handler(ZEND_OPCODE_HANDLER_ARGS)
 		return old_exit_handler(ZEND_OPCODE_HANDLER_ARGS_PASSTHRU);
 	} else {
 		zval_ptr_dtor(&retval);
+		EX(opline)++;
 		return ZEND_USER_OPCODE_CONTINUE;
 	}
 }
