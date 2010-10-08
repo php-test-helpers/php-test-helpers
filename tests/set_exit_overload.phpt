@@ -2,13 +2,21 @@
 set_exit_overload()
 --FILE--
 <?php
-set_exit_overload(function() { echo "FALSE\n"; return false; });
+set_exit_overload(function($arg = NULL) { var_dump($arg); echo "FALSE\n"; return false; });
 die("DIE 1");
-set_exit_overload(function() { echo "TRUE\n"; return true; });
-die("DIE 2");
+die;
+exit;
+set_exit_overload(function($arg) { var_dump($arg); echo "TRUE\n"; return true; });
+die("DIE 4");
 echo "HAHA";
 ?>
 --EXPECT--
+string(5) "DIE 1"
 FALSE
+NULL
+FALSE
+NULL
+FALSE
+string(5) "DIE 4"
 TRUE
-DIE 2
+DIE 4

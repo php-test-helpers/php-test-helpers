@@ -73,6 +73,36 @@ ZEND_GET_MODULE(test_helpers)
 #define EX(element) execute_data->element
 #define EX_T(offset) (*(temp_variable *)((char *) EX(Ts) + offset))
 
+static zval *pth_get_zval_ptr(znode *node, zval **freeval, zend_execute_data *execute_data TSRMLS_DC) /* {{{ */
+{
+	*freeval = NULL;
+
+	switch (node->op_type) {
+	case IS_CONST:
+		return &(node->u.constant);
+	case IS_VAR:
+		return EX_T(node->u.var).var.ptr;
+	case IS_TMP_VAR:
+		return (*freeval = &EX_T(node->u.var).tmp_var);
+	case IS_CV:
+		{
+		zval ***ret = &execute_data->CVs[node->u.var];
+		if (!*ret) {
+				zend_compiled_variable *cv = &EG(active_op_array)->vars[node->u.var];
+				if (zend_hash_quick_find(EG(active_symbol_table), cv->name, cv->name_len+1, cv->hash_value, (void**)ret)==FAILURE) {
+					zend_error(E_NOTICE, "Undefined variable: %s", cv->name);
+					return &EG(uninitialized_zval);
+				}
+		}
+		return **ret;
+		}
+	case IS_UNUSED:
+	default:
+		return NULL;
+	}
+}
+/* }}} */
+
 static void test_helpers_free_new_handler(TSRMLS_D) /* {{{ */
 {
 	if (THG(new_fci).function_name) {
@@ -126,7 +156,7 @@ static int new_handler(ZEND_OPCODE_HANDLER_ARGS)
 
 	zend_fcall_info_args(&THG(new_fci), arg TSRMLS_CC);
 	zend_fcall_info_call(&THG(new_fci), &THG(new_fcc), &retval, NULL TSRMLS_CC);
-	zend_fcall_info_args(&THG(new_fci), NULL TSRMLS_CC);
+	zend_fcall_info_args_clear(&THG(new_fci), 1);
 
 	convert_to_string_ex(&retval);
 	if (zend_lookup_class(Z_STRVAL_P(retval), Z_STRLEN_P(retval), &new_ce TSRMLS_CC) == FAILURE) {
@@ -156,6 +186,7 @@ static int new_handler(ZEND_OPCODE_HANDLER_ARGS)
 /* {{{ exit_handler */
 static int exit_handler(ZEND_OPCODE_HANDLER_ARGS)
 {
+	zval *arg, *msg, *freeop;
 	zval *retval;
 
 	if (THG(exit_fci).function_name == NULL) {
@@ -166,12 +197,25 @@ static int exit_handler(ZEND_OPCODE_HANDLER_ARGS)
 		}
 	}
 
+	msg = pth_get_zval_ptr(&EX(opline)->op1, &freeop, execute_data TSRMLS_CC);
+
+	if (msg) {
+		MAKE_STD_ZVAL(arg);
+		array_init(arg);
+	    add_next_index_zval(arg, msg);
+		zend_fcall_info_args(&THG(exit_fci), arg TSRMLS_CC);
+	}
 	zend_fcall_info_call(&THG(exit_fci), &THG(exit_fcc), &retval, NULL TSRMLS_CC);
+	zend_fcall_info_args_clear(&THG(exit_fci), 1);
 
 	convert_to_boolean(retval);
 	if (Z_LVAL_P(retval)) {
 		zval_ptr_dtor(&retval);
-		return old_exit_handler(ZEND_OPCODE_HANDLER_ARGS_PASSTHRU);
+		if (old_exit_handler) {
+			return old_exit_handler(ZEND_OPCODE_HANDLER_ARGS_PASSTHRU);
+		} else {
+			return ZEND_USER_OPCODE_DISPATCH;
+		}
 	} else {
 		zval_ptr_dtor(&retval);
 		EX(opline)++;
