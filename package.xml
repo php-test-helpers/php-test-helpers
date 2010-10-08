@@ -38,6 +38,8 @@
  <contents>
   <dir name="/">
    <dir name="tests">
+    <file name="set_exit_overload.phpt" role="test" />
+    <file name="unset_exit_overload.phpt" role="test" />
     <file name="set_new_overload_closure.phpt" role="test" />
     <file name="set_new_overload_error_non_existing_class.phpt" role="test" />
     <file name="set_new_overload_error_return_non_existing_class.phpt" role="test" />
