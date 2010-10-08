@@ -246,25 +246,14 @@ PHP_FUNCTION(rename_function)
 {
 	zend_function *func, *dummy_func;
 	char *orig_fname, *new_fname, *lower_orig, *lower_new;
-	int orig_fname_len, new_fname_len, i;
+	int orig_fname_len, new_fname_len;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &orig_fname, &orig_fname_len, &new_fname, &new_fname_len) == FAILURE) {
 		return;
 	}
 
-	// Normalize the source function name to lower case.
-	lower_orig = malloc(orig_fname_len+1);
-	for (i = 0; i < orig_fname_len; i ++) {
-		lower_orig[i] = tolower(orig_fname[i]);
-	}
-	lower_orig[i] = 0;
-
-	// Normalize the destination function name to lower case.
-	lower_new = malloc(new_fname_len + 1);
-	for (i = 0; i < new_fname_len; i++) {
-		lower_new[i] = tolower(new_fname[i]);
-	}
-	lower_new[i] = 0;
+	lower_orig = zend_str_tolower_dup(orig_fname, orig_fname_len);
+	lower_new = zend_str_tolower_dup(new_fname, new_fname_len);
 
 	if (zend_hash_find(EG(function_table), lower_orig, orig_fname_len + 1, (void **) &func) == FAILURE) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "%s(%s, %s) failed: %s does not exist!"			,
@@ -309,8 +298,8 @@ PHP_FUNCTION(rename_function)
 	RETVAL_TRUE;
 
 rename_end:
-	free(lower_orig);
-	free(lower_new);
+	efree(lower_orig);
+	efree(lower_new);
 }
 /* }}} */
 
