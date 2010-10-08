@@ -126,6 +126,32 @@ Class Posing has the following restrictions
 
 These restrictions are not enforced by `ext/test_helpers` because the extension is only intended to ease the development of unit tests (for legacy software systems that cannot be refactored to use Dependency Injection).
 
+### Renaming Functions ###
+
+The `rename_function()` function can be used to rename function:
+
+    <?php
+    function foo()
+    {
+        // ...
+    }
+
+    function foo_stub()
+    {
+        return 'stubbed result';
+    }
+
+    rename_function('foo', 'foo_orig');
+    rename_function('foo_stub', 'foo');
+    var_dump(foo());
+    rename_function('foo', 'foo_stub');
+    rename_function('foo_orig', 'foo');
+    ?>
+
+    string(14) "stubbed result"
+
+This allows the stubbing/mocking of functions.
+
 ## Notes ##
 
 If this extension is used in combination with other extensions, such as Xdebug, which are also overloading the `ZEND_NEW` opcode you have to load it as `zend_extension` after loading the conflicting extension. This can be done in your `php.ini` like this:
