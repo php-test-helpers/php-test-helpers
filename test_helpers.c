@@ -51,6 +51,14 @@
 #include "Zend/zend_exceptions.h"
 #include "Zend/zend_extensions.h"
 
+#ifdef PHP_WIN32
+#   define PHP_TEST_HELPERS_API __declspec(dllexport)
+#elif defined(__GNUC__) && __GNUC__ >= 4
+#   define PHP_TEST_HELPERS_API __attribute__ ((visibility("default")))
+#else
+#   define PHP_TEST_HELPERS_API
+#endif
+
 #if PHP_VERSION_ID < 50300
 typedef opcode_handler_t user_opcode_handler_t;
 
@@ -63,7 +71,20 @@ static user_opcode_handler_t old_new_handler = NULL;
 static user_opcode_handler_t old_exit_handler = NULL;
 static int test_helpers_module_initialized = 0;
 
+ZEND_BEGIN_MODULE_GLOBALS(test_helpers)
+	zend_fcall_info new_fci;
+	zend_fcall_info_cache new_fcc;
+	zend_fcall_info exit_fci;
+	zend_fcall_info_cache exit_fcc;
+ZEND_END_MODULE_GLOBALS(test_helpers)
+
 ZEND_DECLARE_MODULE_GLOBALS(test_helpers)
+
+#ifdef ZTS
+#define THG(v) TSRMG(test_helpers_globals_id, zend_test_helpers_globals *, v)
+#else
+#define THG(v) (test_helpers_globals.v)
+#endif
 
 #ifdef COMPILE_DL_TEST_HELPERS
 ZEND_GET_MODULE(test_helpers)
@@ -133,8 +154,7 @@ static void test_helpers_free_exit_handler(TSrmls_D) /* {{{ */
 }
 /* }}} */
 
-/* {{{ new_handler */
-static int new_handler(ZEND_OPCODE_HANDLER_ARGS)
+static int new_handler(ZEND_OPCODE_HANDLER_ARGS) /* {{{ */
 {
 	zval *retval, *arg;
 	zend_op *opline = EX(opline);
@@ -182,8 +202,7 @@ static int new_handler(ZEND_OPCODE_HANDLER_ARGS)
 }
 /* }}} */
 
-/* {{{ exit_handler */
-static int exit_handler(ZEND_OPCODE_HANDLER_ARGS)
+static int exit_handler(ZEND_OPCODE_HANDLER_ARGS) /* {{{ */
 {
 	zval *msg, *freeop;
 	zval *retval;

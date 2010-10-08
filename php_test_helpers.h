@@ -45,34 +45,7 @@
 extern zend_module_entry test_helpers_module_entry;
 #define phpext_test_helpers_ptr &test_helpers_module_entry
 
-#ifdef PHP_WIN32
-#	define PHP_TEST_HELPERS_API __declspec(dllexport)
-#elif defined(__GNUC__) && __GNUC__ >= 4
-#	define PHP_TEST_HELPERS_API __attribute__ ((visibility("default")))
-#else
-#	define PHP_TEST_HELPERS_API
-#endif
-
-#ifdef ZTS
-#include "TSRM.h"
-#endif
-
 #define TEST_HELPERS_VERSION "1.0.1-dev"
-
-ZEND_BEGIN_MODULE_GLOBALS(test_helpers)
-	zend_fcall_info new_fci;
-	zend_fcall_info_cache new_fcc;
-	zend_fcall_info exit_fci;
-	zend_fcall_info_cache exit_fcc;
-ZEND_END_MODULE_GLOBALS(test_helpers)
-
-#ifdef ZTS
-#define TEST_HELPERS_G(v) TSRMG(test_helpers_globals_id, zend_test_helpers_globals *, v)
-#else
-#define TEST_HELPERS_G(v) (test_helpers_globals.v)
-#endif
-
-#define THG(v) TEST_HELPERS_G(v)
 
 #endif	/* PHP_TEST_HELPERS_H */
 
