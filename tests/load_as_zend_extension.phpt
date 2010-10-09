@@ -5,6 +5,7 @@ zend_extension=modules/test_helpers.so
 --SKIPIF--
 <?php
 if (!extension_loaded('test_helpers')) die('skip test_helpers extensionnot loaded');
+if (!file_exists('modules/test_helpers.so')) die('skip test_helpers.so not found Static build? out-of-src-dir build?');
 ?>
 --FILE--
 <?php
