@@ -124,37 +124,34 @@ static zval *pth_get_zval_ptr(znode *node, zval **freeval, zend_execute_data *ex
 }
 /* }}} */
 
-static void test_helpers_free_new_handler(TSRMLS_D) /* {{{ */
+static void test_helpers_free_handler(zend_fcall_info *fci) /* {{{ */
 {
-	if (THG(new_fci).function_name) {
-		zval_ptr_dtor(&THG(new_fci).function_name);
-		THG(new_fci).function_name = NULL;
+	if (fci->function_name) {
+		zval_ptr_dtor(&fci->function_name);
+		fci->function_name = NULL;
 	}
 #if PHP_VERSION_ID >= 50300
-	if (THG(new_fci).object_ptr) {
-		zval_ptr_dtor(&THG(new_fci).object_ptr);
-		THG(new_fci).object_ptr = NULL;
+	if (fci->object_ptr) {
+		zval_ptr_dtor(&fci->object_ptr);
+		fci->object_ptr = NULL;
 	}
 #endif
+}
+/* }}} */
+
+static void test_helpers_free_new_handler(TSRMLS_D) /* {{{ */
+{
+	test_helpers_free_handler(&THG(new_fci));
 }
 /* }}} */
 
 static void test_helpers_free_exit_handler(TSRMLS_D) /* {{{ */
 {
-	if (THG(exit_fci).function_name) {
-		zval_ptr_dtor(&THG(exit_fci).function_name);
-		THG(exit_fci).function_name = NULL;
-	}
-#if PHP_VERSION_ID >= 50300
-	if (THG(exit_fci).object_ptr) {
-		zval_ptr_dtor(&THG(exit_fci).object_ptr);
-		THG(exit_fci).object_ptr = NULL;
-	}
-#endif
+	test_helpers_free_handler(&THG(exit_fci));
 }
 /* }}} */
 
-static int new_handler(ZEND_OPCODE_HANDLER_ARGS) /* {{{ */
+static int pth_new_handler(ZEND_OPCODE_HANDLER_ARGS) /* {{{ */
 {
 	zval *retval, *arg;
 	zend_op *opline = EX(opline);
@@ -202,7 +199,7 @@ static int new_handler(ZEND_OPCODE_HANDLER_ARGS) /* {{{ */
 }
 /* }}} */
 
-static int exit_handler(ZEND_OPCODE_HANDLER_ARGS) /* {{{ */
+static int pth_exit_handler(ZEND_OPCODE_HANDLER_ARGS) /* {{{ */
 {
 	zval *msg, *freeop;
 	zval *retval;
@@ -262,10 +259,10 @@ static PHP_MINIT_FUNCTION(test_helpers)
 
 	ZEND_INIT_MODULE_GLOBALS(test_helpers, php_test_helpers_init_globals, NULL);
 	old_new_handler = zend_get_user_opcode_handler(ZEND_NEW);
-	zend_set_user_opcode_handler(ZEND_NEW, new_handler);
+	zend_set_user_opcode_handler(ZEND_NEW, pth_new_handler);
 
 	old_exit_handler = zend_get_user_opcode_handler(ZEND_EXIT);
-	zend_set_user_opcode_handler(ZEND_EXIT, exit_handler);
+	zend_set_user_opcode_handler(ZEND_EXIT, pth_exit_handler);
 
 	test_helpers_module_initialized = 1;
 
@@ -289,7 +286,7 @@ static PHP_MINFO_FUNCTION(test_helpers)
 {
 	char *conflict_text;
 
-	if (new_handler != zend_get_user_opcode_handler(ZEND_NEW)) {
+	if (pth_new_handler != zend_get_user_opcode_handler(ZEND_NEW)) {
 		conflict_text = "Yes. The work-around was NOT enabled. Please make sure test_helpers was loaded as zend_extension AFTER conflicting extensions like Xdebug!";
 	} else if (old_new_handler != NULL) {
 		conflict_text = "Yes, work-around enabled";
@@ -327,7 +324,7 @@ static PHP_FUNCTION(set_new_overload)
 		return;
 	}
 
-	if (new_handler != zend_get_user_opcode_handler(ZEND_NEW)) {
+	if (pth_new_handler != zend_get_user_opcode_handler(ZEND_NEW)) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "A conflicting extension was detected. Make sure to load test_helpers as zend_extension after other extensions");
 	}
 
@@ -357,7 +354,7 @@ static PHP_FUNCTION(set_exit_overload)
 		return;
 	}
 
-	if (exit_handler != zend_get_user_opcode_handler(ZEND_EXIT)) {
+	if (pth_exit_handler != zend_get_user_opcode_handler(ZEND_EXIT)) {
 		php_error_docref(NULL TSRMLS_CC, E_WARNING, "A conflicting extension was detected. Make sure to load test_helpers as zend_extension after other extensions");
 	}
 
