@@ -139,7 +139,7 @@ static void test_helpers_free_new_handler(TSRMLS_D) /* {{{ */
 }
 /* }}} */
 
-static void test_helpers_free_exit_handler(TSrmls_D) /* {{{ */
+static void test_helpers_free_exit_handler(TSRMLS_D) /* {{{ */
 {
 	if (THG(exit_fci).function_name) {
 		zval_ptr_dtor(&THG(exit_fci).function_name);
@@ -389,7 +389,7 @@ static PHP_FUNCTION(unset_exit_overload)
 }
 /* }}} */
 
-static int pth_rename_function(HashTable *table, char *orig, int orig_len, char *new, int new_len) /* {{{ */
+static int pth_rename_function(HashTable *table, char *orig, int orig_len, char *new, int new_len TSRMLS_DC) /* {{{ */
 {
 	zend_function *func, *dummy_func;
 
@@ -449,7 +449,7 @@ PHP_FUNCTION(rename_function)
 	lower_orig = zend_str_tolower_dup(orig_fname, orig_fname_len);
 	lower_new = zend_str_tolower_dup(new_fname, new_fname_len);
 
-	success = pth_rename_function(EG(function_table), lower_orig, orig_fname_len, lower_new, new_fname_len);
+	success = pth_rename_function(EG(function_table), lower_orig, orig_fname_len, lower_new, new_fname_len TSRMLS_CC);
 
 	efree(lower_orig);
 	efree(lower_new);
