@@ -291,19 +291,6 @@ static PHP_MINFO_FUNCTION(test_helpers)
 }
 /* }}} */
 
-/* {{{ proto bool unset_new_overload()
-   Remove the current new handler */
-static PHP_FUNCTION(unset_new_overload)
-{
-	if (zend_parse_parameters_none() == FAILURE) {
-		return;
-	}
-
-	test_helpers_free_handler(&THG(new_handler).fci TSRMLS_CC);
-	RETURN_TRUE;
-}
-/* }}} */
-
 static void overload_helper(user_opcode_handler_t op_handler, int opcode, user_handler_t *handler, INTERNAL_FUNCTION_PARAMETERS) /* {{{ */
 {
 	zend_fcall_info fci;
@@ -348,16 +335,30 @@ static PHP_FUNCTION(set_exit_overload)
 }
 /* }}} */
 
-/* {{{ proto bool unset_exit_overload()
-   Remove the current exit handler */
-static PHP_FUNCTION(unset_exit_overload)
+static void unset_overload_helper(user_handler_t *handler, INTERNAL_FUNCTION_PARAMETERS) /* {{{ */
 {
 	if (zend_parse_parameters_none() == FAILURE) {
 		return;
 	}
 
-	test_helpers_free_handler(&THG(exit_handler).fci TSRMLS_CC);
+	test_helpers_free_handler(&handler->fci TSRMLS_CC);
 	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto bool unset_new_overload()
+   Remove the current new handler */
+static PHP_FUNCTION(unset_new_overload)
+{
+	unset_overload_helper(&THG(new_handler), INTERNAL_FUNCTION_PARAM_PASSTHRU);
+}
+/* }}} */
+
+/* {{{ proto bool unset_exit_overload()
+   Remove the current exit handler */
+static PHP_FUNCTION(unset_exit_overload)
+{
+	unset_overload_helper(&THG(exit_handler), INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 /* }}} */
 
