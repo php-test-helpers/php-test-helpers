@@ -71,11 +71,14 @@ static user_opcode_handler_t old_new_handler = NULL;
 static user_opcode_handler_t old_exit_handler = NULL;
 static int test_helpers_module_initialized = 0;
 
+typedef struct {
+	zend_fcall_info fci;
+	zend_fcall_info_cache fcc;
+} user_handler_t;
+
 ZEND_BEGIN_MODULE_GLOBALS(test_helpers)
-	zend_fcall_info new_fci;
-	zend_fcall_info_cache new_fcc;
-	zend_fcall_info exit_fci;
-	zend_fcall_info_cache exit_fcc;
+	user_handler_t new_handler;
+	user_handler_t exit_handler;
 ZEND_END_MODULE_GLOBALS(test_helpers)
 
 ZEND_DECLARE_MODULE_GLOBALS(test_helpers)
@@ -139,25 +142,13 @@ static void test_helpers_free_handler(zend_fcall_info *fci) /* {{{ */
 }
 /* }}} */
 
-static void test_helpers_free_new_handler(TSRMLS_D) /* {{{ */
-{
-	test_helpers_free_handler(&THG(new_fci));
-}
-/* }}} */
-
-static void test_helpers_free_exit_handler(TSRMLS_D) /* {{{ */
-{
-	test_helpers_free_handler(&THG(exit_fci));
-}
-/* }}} */
-
 static int pth_new_handler(ZEND_OPCODE_HANDLER_ARGS) /* {{{ */
 {
 	zval *retval, *arg;
 	zend_op *opline = EX(opline);
 	zend_class_entry *old_ce, **new_ce;
 
-	if (THG(new_fci).function_name == NULL) {
+	if (THG(new_handler).fci.function_name == NULL) {
 		if (old_new_handler) {
 			return old_new_handler(ZEND_OPCODE_HANDLER_ARGS_PASSTHRU);
 		} else {
@@ -170,9 +161,9 @@ static int pth_new_handler(ZEND_OPCODE_HANDLER_ARGS) /* {{{ */
 	MAKE_STD_ZVAL(arg);
 	ZVAL_STRINGL(arg, old_ce->name, old_ce->name_length, 1);
 
-	zend_fcall_info_argn(&THG(new_fci) TSRMLS_CC, 1, &arg);
-	zend_fcall_info_call(&THG(new_fci), &THG(new_fcc), &retval, NULL TSRMLS_CC);
-	zend_fcall_info_args_clear(&THG(new_fci), 1);
+	zend_fcall_info_argn(&THG(new_handler).fci TSRMLS_CC, 1, &arg);
+	zend_fcall_info_call(&THG(new_handler).fci, &THG(new_handler).fcc, &retval, NULL TSRMLS_CC);
+	zend_fcall_info_args_clear(&THG(new_handler).fci, 1);
 
 	convert_to_string_ex(&retval);
 	if (zend_lookup_class(Z_STRVAL_P(retval), Z_STRLEN_P(retval), &new_ce TSRMLS_CC) == FAILURE) {
@@ -204,7 +195,7 @@ static int pth_exit_handler(ZEND_OPCODE_HANDLER_ARGS) /* {{{ */
 	zval *msg, *freeop;
 	zval *retval;
 
-	if (THG(exit_fci).function_name == NULL) {
+	if (THG(exit_handler).fci.function_name == NULL) {
 		if (old_exit_handler) {
 			return old_exit_handler(ZEND_OPCODE_HANDLER_ARGS_PASSTHRU);
 		} else {
@@ -215,10 +206,10 @@ static int pth_exit_handler(ZEND_OPCODE_HANDLER_ARGS) /* {{{ */
 	msg = pth_get_zval_ptr(&EX(opline)->op1, &freeop, execute_data TSRMLS_CC);
 
 	if (msg) {
-		zend_fcall_info_argn(&THG(exit_fci) TSRMLS_CC, 1, &msg);
+		zend_fcall_info_argn(&THG(exit_handler).fci TSRMLS_CC, 1, &msg);
 	}
-	zend_fcall_info_call(&THG(exit_fci), &THG(exit_fcc), &retval, NULL TSRMLS_CC);
-	zend_fcall_info_args_clear(&THG(exit_fci), 1);
+	zend_fcall_info_call(&THG(exit_handler).fci, &THG(exit_handler).fcc, &retval, NULL TSRMLS_CC);
+	zend_fcall_info_args_clear(&THG(exit_handler).fci, 1);
 
 	convert_to_boolean(retval);
 	if (Z_LVAL_P(retval)) {
@@ -238,11 +229,11 @@ static int pth_exit_handler(ZEND_OPCODE_HANDLER_ARGS) /* {{{ */
 
 static void php_test_helpers_init_globals(zend_test_helpers_globals *globals) /* {{{ */
 {
-	globals->new_fci.function_name = NULL;
-	globals->exit_fci.function_name = NULL;
+	globals->new_handler.fci.function_name = NULL;
+	globals->exit_handler.fci.function_name = NULL;
 #if PHP_VERSION_ID >= 50300
-	globals->new_fci.object_ptr = NULL;
-	globals->exit_fci.object_ptr = NULL;
+	globals->new_handler.fci.object_ptr = NULL;
+	globals->exit_handler.fci.object_ptr = NULL;
 #endif
 }
 /* }}} */
@@ -274,8 +265,8 @@ static PHP_MINIT_FUNCTION(test_helpers)
  */
 static PHP_RSHUTDOWN_FUNCTION(test_helpers)
 {
-	test_helpers_free_new_handler(TSRMLS_C);
-	test_helpers_free_exit_handler(TSRMLS_C);
+	test_helpers_free_handler(&THG(new_handler).fci TSRMLS_CC);
+	test_helpers_free_handler(&THG(exit_handler).fci TSRMLS_CC);
 	return SUCCESS;
 }
 /* }}} */
@@ -308,7 +299,35 @@ static PHP_FUNCTION(unset_new_overload)
 		return;
 	}
 
-	test_helpers_free_new_handler(TSRMLS_C);
+	test_helpers_free_handler(&THG(new_handler).fci TSRMLS_CC);
+	RETURN_TRUE;
+}
+/* }}} */
+
+static void overload_helper(user_opcode_handler_t op_handler, int opcode, user_handler_t *handler, INTERNAL_FUNCTION_PARAMETERS) /* {{{ */
+{
+	zend_fcall_info fci;
+	zend_fcall_info_cache fcc;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "f", &fci, &fcc) == FAILURE) {
+		return;
+	}
+
+	if (op_handler != zend_get_user_opcode_handler(opcode)) {
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "A conflicting extension was detected. Make sure to load test_helpers as zend_extension after other extensions");
+	}
+
+	test_helpers_free_handler(&handler->fci TSRMLS_CC);
+
+	handler->fci = fci;
+	handler->fcc = fcc;
+	Z_ADDREF_P(handler->fci.function_name);
+#if PHP_VERSION_ID >= 50300
+	if (handler->fci.object_ptr) {
+		Z_ADDREF_P(handler->fci.object_ptr);
+	}
+#endif
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -317,59 +336,15 @@ static PHP_FUNCTION(unset_new_overload)
    Register a callback, called on instantiation of a new object */
 static PHP_FUNCTION(set_new_overload)
 {
-	zend_fcall_info fci;
-	zend_fcall_info_cache fcc;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "f", &fci, &fcc) == FAILURE) {
-		return;
-	}
-
-	if (pth_new_handler != zend_get_user_opcode_handler(ZEND_NEW)) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "A conflicting extension was detected. Make sure to load test_helpers as zend_extension after other extensions");
-	}
-
-	test_helpers_free_new_handler(TSRMLS_C);
-
-	THG(new_fci) = fci;
-	THG(new_fcc) = fcc;
-	Z_ADDREF_P(THG(new_fci).function_name);
-#if PHP_VERSION_ID >= 50300
-	if (THG(new_fci).object_ptr) {
-		Z_ADDREF_P(THG(new_fci).object_ptr);
-	}
-#endif
-
-	RETURN_TRUE;
+	overload_helper(pth_new_handler, ZEND_NEW, &THG(new_handler), INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 /* }}} */
 
 /* {{{ proto bool set_exit_overload(callback cb)
    Register a callback, called on exit()/die() */
 static PHP_FUNCTION(set_exit_overload)
-{
-	zend_fcall_info fci;
-	zend_fcall_info_cache fcc;
-
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "f", &fci, &fcc) == FAILURE) {
-		return;
-	}
-
-	if (pth_exit_handler != zend_get_user_opcode_handler(ZEND_EXIT)) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "A conflicting extension was detected. Make sure to load test_helpers as zend_extension after other extensions");
-	}
-
-	test_helpers_free_exit_handler(TSRMLS_C);
-
-	THG(exit_fci) = fci;
-	THG(exit_fcc) = fcc;
-	Z_ADDREF_P(THG(exit_fci).function_name);
-#if PHP_VERSION_ID >= 50300
-	if (THG(exit_fci).object_ptr) {
-		Z_ADDREF_P(THG(exit_fci).object_ptr);
-	}
-#endif
-
-	RETURN_TRUE;
+{	
+	overload_helper(pth_exit_handler, ZEND_EXIT, &THG(exit_handler), INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 /* }}} */
 
@@ -381,7 +356,7 @@ static PHP_FUNCTION(unset_exit_overload)
 		return;
 	}
 
-	test_helpers_free_exit_handler(TSRMLS_C);
+	test_helpers_free_handler(&THG(exit_handler).fci TSRMLS_CC);
 	RETURN_TRUE;
 }
 /* }}} */
