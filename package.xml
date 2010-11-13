@@ -24,10 +24,10 @@
   <email>johannes@php.net</email>
   <active>yes</active>
  </lead>
- <date>2010-01-01</date>
+ <date>2010-10-25</date>
  <version>
-  <release>1.0.0</release>
-  <api>1.0.0</api>
+  <release>1.1.0</release>
+  <api>1.1.0</api>
  </version>
  <stability>
   <release>stable</release>
