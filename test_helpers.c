@@ -3,7 +3,7 @@
   | ext/test_helper                                                      |
   | An extension for the PHP Interpreter to ease testing of PHP code.    |
   +----------------------------------------------------------------------+
-  | Copyright (c) 2010 Sebastian Bergmann. All rights reserved.          |
+  | Copyright (c) 2011 Sebastian Bergmann. All rights reserved.          |
   +----------------------------------------------------------------------+
   | Redistribution and use in source and binary forms, with or without   |
   | modification, are permitted provided that the following conditions   |
@@ -511,7 +511,7 @@ zend_extension zend_extension_entry = {
 	TEST_HELPERS_VERSION,
 	"Johannes Schlueter, Scott MacVicar, Sebastian Bergmann",
 	"http://github.com/johannes/php-test-helpers",
-	"Copyright (c) 2009-2010",
+	"Copyright (c) 2009-2011",
 	test_helpers_zend_startup,
 	NULL,           /* shutdown_func_t */
 	NULL,           /* activate_func_t */
