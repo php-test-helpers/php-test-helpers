@@ -65,6 +65,57 @@ typedef opcode_handler_t user_opcode_handler_t;
 #define Z_ADDREF_P(z) ((z)->refcount++)
 
 #define zend_parse_parameters_none() zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "")
+
+static void zend_fcall_info_args_clear(zend_fcall_info *fci, int free_mem) /* {{{ */
+{
+    if (fci->params) {
+        if (free_mem) {
+            efree(fci->params);
+            fci->params = NULL;
+        }
+    }
+    fci->param_count = 0;
+}
+/* }}} */
+
+static int zend_fcall_info_argv(zend_fcall_info *fci TSRMLS_DC, int argc, va_list *argv) /* {{{ */
+{
+    int i;
+    zval **arg;
+
+    if (argc < 0) {
+        return FAILURE;
+    }
+
+    zend_fcall_info_args_clear(fci, !argc);
+
+    if (argc) {
+        fci->param_count = argc;
+        fci->params = (zval ***) erealloc(fci->params, fci->param_count * sizeof(zval **));
+
+        for (i = 0; i < argc; ++i) {
+            arg = va_arg(*argv, zval **);
+            fci->params[i] = arg;
+        }
+    }
+
+    return SUCCESS;
+}
+/* }}} */
+
+static int zend_fcall_info_argn(zend_fcall_info *fci TSRMLS_DC, int argc, ...) /* {{{ */
+{
+   int ret;
+   va_list argv;
+
+   va_start(argv, argc);
+   ret = zend_fcall_info_argv(fci TSRMLS_CC, argc, &argv);
+   va_end(argv);
+
+   return ret;
+}
+/* }}} */
+
 #endif
 
 static user_opcode_handler_t old_new_handler = NULL;
