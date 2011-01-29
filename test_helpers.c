@@ -477,7 +477,7 @@ static int pth_rename_function(HashTable *table, char *orig, int orig_len, char 
 
 /* {{{ proto bool rename_method(string class name, string orig_method_name, string new_method_name)
    Rename a method inside a class. The method whil remain partof the same class */
-PHP_FUNCTION(rename_method)
+static PHP_FUNCTION(rename_method)
 {
 	zend_class_entry *ce = NULL;
 	char *orig_fname, *new_fname;
@@ -498,7 +498,7 @@ PHP_FUNCTION(rename_method)
 /* {{{ proto bool rename_function(string orig_func_name, string new_func_name)
    Rename a function from its original to a new name. This is mainly useful in
    unittest to stub out untested functions */
-PHP_FUNCTION(rename_function)
+static PHP_FUNCTION(rename_function)
 {
 	char *orig_fname, *new_fname;
 	int orig_fname_len, new_fname_len;
