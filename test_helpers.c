@@ -414,7 +414,7 @@ static PHP_FUNCTION(unset_exit_overload)
 }
 /* }}} */
 
-static int pth_rename_function(HashTable *table, char *orig, int orig_len, char *new, int new_len TSRMLS_DC) /* {{{ */
+static int pth_rename_function_impl(HashTable *table, char *orig, int orig_len, char *new, int new_len TSRMLS_DC) /* {{{ */
 {
 	zend_function *func, *dummy_func;
 
@@ -458,28 +458,56 @@ static int pth_rename_function(HashTable *table, char *orig, int orig_len, char 
 }
 /* }}} */
 
+static int pth_rename_function(HashTable *table, char *orig, int orig_len, char *new, int new_len TSRMLS_DC) /* {{{ */
+{
+	char *lower_orig, *lower_new;
+	int success;
+
+	lower_orig = zend_str_tolower_dup(orig, orig_len);
+	lower_new = zend_str_tolower_dup(new, new_len);
+
+	success = pth_rename_function_impl(table, lower_orig, orig_len, lower_new, new_len TSRMLS_CC);
+
+	efree(lower_orig);
+	efree(lower_new);
+
+	return success;
+}
+/* }}} */
+
+/* {{{ proto bool rename_method(string class name, string orig_method_name, string new_method_name)
+   Rename a method inside a class. The method whil remain partof the same class */
+PHP_FUNCTION(rename_method)
+{
+	zend_class_entry *ce = NULL;
+	char *orig_fname, *new_fname;
+	int orig_fname_len, new_fname_len;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "Css", &ce, &orig_fname, &orig_fname_len, &new_fname, &new_fname_len) == FAILURE) {
+		return;
+	}
+
+	if (SUCCESS == pth_rename_function(&ce->function_table, orig_fname, orig_fname_len, new_fname, new_fname_len TSRMLS_CC)) {
+		RETURN_TRUE;
+	} else {
+		RETURN_FALSE;
+	}
+}
+/* }}} */
+
 /* {{{ proto bool rename_function(string orig_func_name, string new_func_name)
    Rename a function from its original to a new name. This is mainly useful in
    unittest to stub out untested functions */
 PHP_FUNCTION(rename_function)
 {
-	char *orig_fname, *new_fname, *lower_orig, *lower_new;
+	char *orig_fname, *new_fname;
 	int orig_fname_len, new_fname_len;
-	int success;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ss", &orig_fname, &orig_fname_len, &new_fname, &new_fname_len) == FAILURE) {
 		return;
 	}
 
-	lower_orig = zend_str_tolower_dup(orig_fname, orig_fname_len);
-	lower_new = zend_str_tolower_dup(new_fname, new_fname_len);
-
-	success = pth_rename_function(EG(function_table), lower_orig, orig_fname_len, lower_new, new_fname_len TSRMLS_CC);
-
-	efree(lower_orig);
-	efree(lower_new);
-
-	if (success == SUCCESS) {
+	if (SUCCESS == pth_rename_function(EG(function_table), orig_fname, orig_fname_len, new_fname, new_fname_len TSRMLS_CC)) {
 		RETURN_TRUE;
 	} else {
 		RETURN_FALSE;
@@ -526,6 +554,7 @@ static const zend_function_entry test_helpers_functions[] = {
 	PHP_FE(set_new_overload, arginfo_set_new_overload)
 	PHP_FE(unset_exit_overload, arginfo_unset_exit_overload)
 	PHP_FE(set_exit_overload, arginfo_set_exit_overload)
+	PHP_FE(rename_method, NULL)
 	PHP_FE(rename_function, arginfo_rename_function)
 	{NULL, NULL, NULL}
 };
