@@ -141,10 +141,6 @@ ZEND_DECLARE_MODULE_GLOBALS(test_helpers)
 #define THG(v) (test_helpers_globals.v)
 #endif
 
-#ifdef COMPILE_DL_TEST_HELPERS
-ZEND_GET_MODULE(test_helpers)
-#endif
-
 #undef EX
 #define EX(element) execute_data->element
 #define EX_T(offset) (*(temp_variable *)((char *) EX(Ts) + offset))
@@ -606,6 +602,10 @@ zend_extension zend_extension_entry = {
 	NULL,           /* op_array_dtor_func_t */
 	STANDARD_ZEND_EXTENSION_PROPERTIES
 };
+
+#ifdef COMPILE_DL_TEST_HELPERS
+ZEND_GET_MODULE(test_helpers)
+#endif
 
 /*
  * Local variables:
