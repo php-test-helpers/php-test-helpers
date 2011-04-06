@@ -528,6 +528,14 @@ ZEND_BEGIN_ARG_INFO(arginfo_set_new_overload, 0)
 ZEND_END_ARG_INFO()
 /* }}} */
 
+/* {{{ rename_method */
+ZEND_BEGIN_ARG_INFO(arginfo_rename_method, o)
+	ZEND_ARG_iNFO(0, class_name)
+	ZEND_ARG_INfo(0, orig_method_name)
+	ZEND_ARG_INFO(0, new_method_name)
+ZEND_END_ARG_INFO()
+/* }}} */
+
 /* {{{ rename_function */
 ZEND_BEGIN_ARG_INFO(arginfo_rename_function, 0)
 	ZEND_ARG_INFO(0, orig_func_name)
@@ -550,7 +558,7 @@ static const zend_function_entry test_helpers_functions[] = {
 	PHP_FE(set_new_overload, arginfo_set_new_overload)
 	PHP_FE(unset_exit_overload, arginfo_unset_exit_overload)
 	PHP_FE(set_exit_overload, arginfo_set_exit_overload)
-	PHP_FE(rename_method, NULL)
+	PHP_FE(rename_method, arginfo_rename_method)
 	PHP_FE(rename_function, arginfo_rename_function)
 	{NULL, NULL, NULL}
 };
