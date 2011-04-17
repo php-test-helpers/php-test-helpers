@@ -59,8 +59,8 @@
 #   define PHP_TEST_HELPERS_API
 #endif
 
+/* {{{ PHP < 5.3.0 */
 #if PHP_VERSION_ID < 50300
-/* {{{ PHP 5.2 compat */
 typedef opcode_handler_t user_opcode_handler_t;
 
 #define Z_ADDREF_P(z) ((z)->refcount++)
@@ -116,8 +116,8 @@ static int zend_fcall_info_argn(zend_fcall_info *fci TSRMLS_DC, int argc, ...) /
    return ret;
 }
 /* }}} */
+#endif /* PHP_VERSION_ID < 50300 */
 /* }}} */
-#endif
 
 static user_opcode_handler_t old_new_handler = NULL;
 static user_opcode_handler_t old_exit_handler = NULL;
