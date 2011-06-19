@@ -529,9 +529,9 @@ ZEND_END_ARG_INFO()
 /* }}} */
 
 /* {{{ rename_method */
-ZEND_BEGIN_ARG_INFO(arginfo_rename_method, o)
-	ZEND_ARG_iNFO(0, class_name)
-	ZEND_ARG_INfo(0, orig_method_name)
+ZEND_BEGIN_ARG_INFO(arginfo_rename_method, 0)
+	ZEND_ARG_INFO(0, class_name)
+	ZEND_ARG_INFO(0, orig_method_name)
 	ZEND_ARG_INFO(0, new_method_name)
 ZEND_END_ARG_INFO()
 /* }}} */
