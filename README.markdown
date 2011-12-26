@@ -36,7 +36,7 @@ When a [unit test](http://en.wikipedia.org/wiki/Unit_test) exercises code that c
 With the `set_exit_overload()` function it is possible to overload the `exit` / `die` statement and make it a no-op, for instance:
 
     <?php
-    set_exit_overload(function() { return FALSE; }
+    set_exit_overload(function() { return FALSE; });
     exit;
     print 'We did not exit.';
     unset_exit_overload();
