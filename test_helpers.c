@@ -153,14 +153,14 @@ static zval *pth_get_zval_ptr(znode *node, zval **freeval, zend_execute_data *ex
 	case IS_CONST:
 		return &(node->u.constant);
 	case IS_VAR:
-		return EX_T(node->u.var).var.ptr;
+		return EX_T(node->u.op.var).var.ptr;
 	case IS_TMP_VAR:
-		return (*freeval = &EX_T(node->u.var).tmp_var);
+		return (*freeval = &EX_T(node->u.op.var).tmp_var);
 	case IS_CV:
 		{
-		zval ***ret = &execute_data->CVs[node->u.var];
+		zval ***ret = &execute_data->CVs[node->u.op.var];
 		if (!*ret) {
-				zend_compiled_variable *cv = &EG(active_op_array)->vars[node->u.var];
+				zend_compiled_variable *cv = &EG(active_op_array)->vars[node->u.op.var];
 				if (zend_hash_quick_find(EG(active_symbol_table), cv->name, cv->name_len+1, cv->hash_value, (void**)ret)==FAILURE) {
 					zend_error(E_NOTICE, "Undefined variable: %s", cv->name);
 					return &EG(uninitialized_zval);
@@ -204,7 +204,7 @@ static int pth_new_handler(ZEND_OPCODE_HANDLER_ARGS) /* {{{ */
 		}
 	}
 
-	old_ce = EX_T(opline->op1.u.var).class_entry;
+	old_ce = EX_T(opline->op1.var).class_entry;
 
 	MAKE_STD_ZVAL(arg);
 	ZVAL_STRINGL(arg, old_ce->name, old_ce->name_length, 1);
@@ -228,7 +228,7 @@ static int pth_new_handler(ZEND_OPCODE_HANDLER_ARGS) /* {{{ */
 	zval_ptr_dtor(&retval);
 
 
-	EX_T(opline->op1.u.var).class_entry = *new_ce;
+	EX_T(opline->op1.var).class_entry = *new_ce;
 
 	if (old_new_handler) {
 		return old_new_handler(ZEND_OPCODE_HANDLER_ARGS_PASSTHRU);
