@@ -143,53 +143,69 @@ ZEND_DECLARE_MODULE_GLOBALS(test_helpers)
 
 #undef EX
 #define EX(element) execute_data->element
-#define EX_T(offset) (*(temp_variable *)((char *) EX(Ts) + offset))
 
-static zval *pth_get_zval_ptr(znode *node, zval **freeval, zend_execute_data *execute_data TSRMLS_DC) /* {{{ */
+#if PHP_VERSION_ID >= 50500
+# define EX_T(offset) (*EX_TMP_VAR(execute_data, offset))
+#else
+# define EX_T(offset) (*(temp_variable *)((char*)execute_data->Ts + offset))
+#endif
+
+#if PHP_VERSION_ID >= 50399
+# define PTH_ZNODE znode_op
+# define PTH_TYPE(t) t##_type
+#else
+# define PTH_ZNODE znode
+# define PTH_TYPE(t) t.op_type
+#endif
+
+zval *pth_get_zval_ptr(int node_type, PTH_ZNODE *node, zval **freeval, zend_execute_data *execute_data TSRMLS_DC)
 {
 	*freeval = NULL;
 
-	switch (node->op_type) {
-	case IS_CONST:
-		return &(node->u.constant);
-	case IS_VAR:
-#if ZEND_EXTENSION_API_NO >= 220100525
-		return EX_T(node->u.op.var).var.ptr;
+	switch (node_type) {
+		case IS_CONST:
+#if PHP_VERSION_ID >= 50399
+			return node->zv;
 #else
-		return EX_T(node->u.var).var.ptr;
+			return &node->u.constant;
 #endif
-	case IS_TMP_VAR:
-#if ZEND_EXTENSION_API_NO >= 220100525
-		return (*freeval = &EX_T(node->u.op.var).tmp_var);
+			break;
+
+		case IS_VAR:
+#if PHP_VERSION_ID >= 50399
+			if (EX_T(node->var).var.ptr) {
+				return EX_T(node->var).var.ptr;
 #else
-		return (*freeval = &EX_T(node->u.var).tmp_var);
+			if (EX_T(node->u.var).var.ptr) {
+				return EX_T(node->u.var).var.ptr;
 #endif
-	case IS_CV:
-		{
-#if ZEND_EXTENSION_API_NO >= 220100525
-		zval ***ret = &execute_data->CVs[node->u.op.var];
+			}
+			break;
+
+		case IS_TMP_VAR:
+#if PHP_VERSION_ID >= 50399
+			return (*freeval = &EX_T(node->var).tmp_var);
 #else
-		zval ***ret = &execute_data->CVs[node->u.var];
+			return (*freeval = &EX_T(node->u.var).tmp_var);
 #endif
-		if (!*ret) {
-#if ZEND_EXTENSION_API_NO >= 220100525
-				zend_compiled_variable *cv = &EG(active_op_array)->vars[node->u.op.var];
+			break;
+
+		case IS_CV: {
+			zval **tmp;
+#if PHP_VERSION_ID >= 50399
+			tmp = zend_get_compiled_variable_value(execute_data, node->constant);
 #else
-				zend_compiled_variable *cv = &EG(active_op_array)->vars[node->u.var];
+			tmp = zend_get_compiled_variable_value(execute_data, node->u.constant.value.lval);
 #endif
-				if (zend_hash_quick_find(EG(active_symbol_table), cv->name, cv->name_len+1, cv->hash_value, (void**)ret)==FAILURE) {
-					zend_error(E_NOTICE, "Undefined variable: %s", cv->name);
-					return &EG(uninitialized_zval);
-				}
+			if (tmp) {
+				return *tmp;
+			}
+			break;
 		}
-		return **ret;
-		}
-	case IS_UNUSED:
-	default:
-		return NULL;
 	}
+
+	return NULL;
 }
-/* }}} */
 
 static void test_helpers_free_handler(zend_fcall_info *fci) /* {{{ */
 {
@@ -265,6 +281,7 @@ static int pth_new_handler(ZEND_OPCODE_HANDLER_ARGS) /* {{{ */
 static int pth_exit_handler(ZEND_OPCODE_HANDLER_ARGS) /* {{{ */
 {
 	zval *msg, *freeop;
+	zend_op *opline = EX(opline);
 	zval *retval;
 
 	if (THG(exit_handler).fci.function_name == NULL) {
@@ -275,7 +292,7 @@ static int pth_exit_handler(ZEND_OPCODE_HANDLER_ARGS) /* {{{ */
 		}
 	}
 
-	msg = pth_get_zval_ptr(&EX(opline)->op1, &freeop, execute_data TSRMLS_CC);
+	msg = pth_get_zval_ptr(opline->PTH_TYPE(op1), &opline->op1, &freeop, execute_data TSRMLS_CC);
 
 	if (msg) {
 		zend_fcall_info_argn(&THG(exit_handler).fci TSRMLS_CC, 1, &msg);
