@@ -207,7 +207,7 @@ zval *pth_get_zval_ptr(int node_type, PTH_ZNODE *node, zval **freeval, zend_exec
 	return NULL;
 }
 
-static void test_helpers_free_handler(zend_fcall_info *fci) /* {{{ */
+static void test_helpers_free_handler(zend_fcall_info *fci TSRMLS_DC) /* {{{ */
 {
 	if (fci->function_name) {
 		zval_ptr_dtor(&fci->function_name);
