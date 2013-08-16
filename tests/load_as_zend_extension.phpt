@@ -2,7 +2,7 @@
 Loading test_helpers as zend_extension
 --INI--
 zend_extension=modules/test_helpers.so
-log_errors=1
+error_log=
 display_errors=0
 --SKIPIF--
 <?php
