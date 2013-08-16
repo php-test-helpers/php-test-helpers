@@ -2,6 +2,8 @@
 Loading test_helpers as zend_extension
 --INI--
 zend_extension=modules/test_helpers.so
+log_errors=1
+display_errors=0
 --SKIPIF--
 <?php
 if (version_compare(PHP_VERSION, '5.5', '>=')) die("skip test is for PHP < 5.5.");
@@ -16,6 +18,4 @@ echo "done";
 ?>
 --EXPECT--
 PHP Warning:  Module 'test_helpers' already loaded in Unknown on line 0
-
-Warning: Module 'test_helpers' already loaded in Unknown on line 0
 done
