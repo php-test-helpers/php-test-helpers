@@ -7,7 +7,7 @@ display_errors=0
 --SKIPIF--
 <?php
 if (version_compare(PHP_VERSION, '5.5', '>=')) die("skip test is for PHP < 5.5.");
-if (!extension_loaded('test_helpers')) die('skip test_helpers extensionnot loaded');
+if (!extension_loaded('test_helpers')) die('skip test_helpers extension not loaded');
 if (!file_exists('modules/test_helpers.so')) die('skip test_helpers.so not found Static build? out-of-src-dir build?');
 ?>
 --FILE--
