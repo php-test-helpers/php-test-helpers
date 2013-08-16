@@ -8,7 +8,6 @@ php:
 before_script:
   - phpize && ./configure --enable-test-helpers && make
   - sed -i -e 's/save_or_mail_results();//g' -e 's/$failed_test_data\['\''test_name'\''\] . $failed_test_data\['\''info'\''\]/str_repeat('\''='\'', 80) . "\\n" . $failed_test_data['\''test_name'\''] . $failed_test_data['\''info'\''] . "\\n" . str_repeat('\''='\'', 80) . "\\n" . file_get_contents(realpath($failed_test_data['\''diff'\'']), FILE_BINARY)/g' run-tests.php
-  - sed -i -e 's/-@if test ! -z/@if test ! -z/g' -e 's/rm $(top_builddir)\/tmp-php.ini;//g' Makefile
-  - sed -i 's/^\(.*xdebug.so\)/;\1/' tmp-php.ini 
+  - sed -i -e 's/-@if test ! -z/@if test ! -z/g' -e 's/rm $(top_builddir)\/tmp-php.ini;//g' -e 's/^\(.*TEST_PHP_EXECUTABLE=$(PHP_EXECUTABLE) \\\)/\t\t$(SED) -i '\''s\/^\\(.*xdebug.so\\)\/;\\1\/'\'' $\(top_builddir\)\/tmp-php.ini; \\\n\1/' Makefile
 
 script: REPORT_EXIT_STATUS=1 make test
