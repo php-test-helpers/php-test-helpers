@@ -1,0 +1,13 @@
+language: php
+
+php:
+  - 5.3
+  - 5.4
+  - 5.5
+
+before_script:
+  - phpize && ./configure --enable-test-helpers && make
+  - sed -i 's/save_or_mail_results();//g' run-tests.php
+  - sed -i -e 's/-@if test ! -z/@if test ! -z/g' -e 's/rm $(top_builddir)\/tmp-php.ini;//g' Makefile
+
+script: REPORT_EXIT_STATUS=1 make test
