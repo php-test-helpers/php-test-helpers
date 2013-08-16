@@ -1,10 +1,10 @@
 --TEST--
 Loading test_helpers as zend_extension
 --INI--
-zend_extension=modules/test_helpers.so
+zend_extension=test_helpers.so
 --SKIPIF--
 <?php
-if (version_compare(PHP_VERSION, '5.5', '>=')) die("skip test is for PHP < 5.5.");
+if (version_compare(PHP_VERSION, '5.5', '<')) die("skip this test is for PHP 5.5+.");
 if (!extension_loaded('test_helpers')) die('skip test_helpers extensionnot loaded');
 if (!file_exists('modules/test_helpers.so')) die('skip test_helpers.so not found Static build? out-of-src-dir build?');
 ?>
