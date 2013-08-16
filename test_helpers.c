@@ -282,7 +282,7 @@ static int pth_exit_handler(ZEND_OPCODE_HANDLER_ARGS) /* {{{ */
 {
 	zval *msg, *freeop;
 	zend_op *opline = EX(opline);
-	zval *retval;
+	zval *retval = NULL;
 
 	if (THG(exit_handler).fci.function_name == NULL) {
 		if (old_exit_handler) {
@@ -299,6 +299,11 @@ static int pth_exit_handler(ZEND_OPCODE_HANDLER_ARGS) /* {{{ */
 	}
 	zend_fcall_info_call(&THG(exit_handler).fci, &THG(exit_handler).fcc, &retval, NULL TSRMLS_CC);
 	zend_fcall_info_args_clear(&THG(exit_handler).fci, 1);
+
+	if(UNEXPECTED(retval == NULL)) {
+		EX(opline)++;
+		return ZEND_USER_OPCODE_CONTINUE;
+	}
 
 	convert_to_boolean(retval);
 	if (Z_LVAL_P(retval)) {
