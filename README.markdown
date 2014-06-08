@@ -1,4 +1,4 @@
-[Attention: the Test-Helper extension is superseded](https://twitter.com/s_bergmann/status/457816903881588736) by https://github.com/krakjoe/uopz
+[Attention: the test_helpers extension is superseded](https://twitter.com/s_bergmann/status/457816903881588736) by https://github.com/krakjoe/uopz
 
 # ext/test_helpers #
 
