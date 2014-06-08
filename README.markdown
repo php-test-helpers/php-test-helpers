@@ -1,3 +1,5 @@
+[Attention: the Test-Helper extension is superseded](https://twitter.com/s_bergmann/status/457816903881588736) by https://github.com/krakjoe/uopz
+
 # ext/test_helpers #
 
 `ext/test_helpers` is an extension for the PHP Interpreter to ease testing of PHP code.
