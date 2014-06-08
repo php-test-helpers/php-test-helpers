@@ -1,4 +1,6 @@
-[Attention: the test_helpers extension is superseded](https://github.com/php-test-helpers/php-test-helpers/issues/29#issuecomment-44049111) by https://github.com/krakjoe/uopz
+### **Attention:** [the test_helpers extension is superseded](https://github.com/php-test-helpers/php-test-helpers/issues/29#issuecomment-44049111) by https://github.com/krakjoe/uopz
+
+---
 
 # ext/test_helpers #
 
