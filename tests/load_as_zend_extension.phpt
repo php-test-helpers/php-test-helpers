@@ -18,5 +18,5 @@ if (!file_exists('modules/test_helpers.so')) die('skip test_helpers.so not found
 echo "done";
 ?>
 --EXPECT--
-PHP Warnig:  Module 'test_helpers' already loaded in Unknown on line 0
+PHP Warning:  Module 'test_helpers' already loaded in Unknown on line 0
 done
