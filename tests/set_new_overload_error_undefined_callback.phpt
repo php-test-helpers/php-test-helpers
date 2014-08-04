@@ -12,6 +12,6 @@ var_dump(set_new_overload('callback'));
 
 var_dump(get_class(new Bar));
 --EXPECTF--
-Warning: set_new_overload() expects parameter 1 to be a valid callback, function 'callback' not found or invalid function name in %s on line %d
+Warning: set_new_overload() expects parameter 1 to be %s
 NULL
 string(3) "Bar"

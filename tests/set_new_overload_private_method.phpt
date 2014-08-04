@@ -31,7 +31,7 @@ var_dump(get_class(new Bar));
 var_dump($cb->set_overload());
 var_dump(get_class(new Bar));
 --EXPECTF--
-Warning: set_new_overload() expects parameter 1 to be a valid callback, cannot access private method CB::callback() in %s on line %d
+Warning: set_new_overload() expects parameter 1 to be %s
 NULL
 string(3) "Bar"
 bool(true)

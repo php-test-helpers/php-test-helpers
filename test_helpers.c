@@ -63,6 +63,14 @@
 #if PHP_VERSION_ID < 50300
 typedef opcode_handler_t user_opcode_handler_t;
 
+#if (defined (__GNUC__) && __GNUC__ > 2 ) && !defined(DARWIN) && !defined(__hpux) && !defined(_AIX)
+#   define EXPECTED(condition)   __builtin_expect(condition, 1)
+#   define UNEXPECTED(condition) __builtin_expect(condition, 0)
+#else
+#   define EXPECTED(condition)   (condition)
+#   define UNEXPECTED(condition) (condition)
+#endif
+
 #define Z_ADDREF_P(z) ((z)->refcount++)
 
 #define zend_parse_parameters_none() zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "")
@@ -424,7 +432,7 @@ static PHP_FUNCTION(set_new_overload)
 /* {{{ proto bool set_exit_overload(callback cb)
    Register a callback, called on exit()/die() */
 static PHP_FUNCTION(set_exit_overload)
-{	
+{
 	overload_helper(pth_exit_handler, ZEND_EXIT, &THG(exit_handler), INTERNAL_FUNCTION_PARAM_PASSTHRU);
 }
 /* }}} */
