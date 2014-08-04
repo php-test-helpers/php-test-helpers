@@ -15,3 +15,6 @@ before_script:
   - sed -i -e 's/-\(@if test ! -z\)/\1/' -e 's/rm $(top_builddir)\/tmp-php.ini;//' -e 's/^\(.*TEST_PHP_EXECUTABLE=$(PHP_EXECUTABLE) \\\)/\t\t$(SED) -i '\''s\/^\\(.*xdebug.so\\)\/;\\1\/'\'' $\(top_builddir\)\/tmp-php.ini; \\\n\1/' Makefile
 
 script: REPORT_EXIT_STATUS=1 make test
+
+notifications:
+  email: false
